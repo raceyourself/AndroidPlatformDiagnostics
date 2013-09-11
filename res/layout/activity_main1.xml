@@ -15,4 +15,12 @@
         android:layout_marginTop="17dp"
         android:text="Test Authentication" />
 
+    <Button
+        android:id="@+id/testGpsCurrentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="GetCurrentLocation" >
+    </Button>
+
 </RelativeLayout>
