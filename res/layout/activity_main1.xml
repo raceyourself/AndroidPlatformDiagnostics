@@ -16,11 +16,11 @@
         android:text="Test Authentication" />
 
     <Button
-        android:id="@+id/testGpsCurrentButton"
+        android:id="@+id/testGpsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="GetCurrentLocation" >
-    </Button>
+        android:layout_below="@+id/testAuthenticationButton"
+        android:layout_marginTop="21dp"
+        android:text="Test GPS" />
 
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.glassfitgames.glassfitplatformdemo;
 
+import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.auth.Helper;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
 
@@ -16,34 +17,34 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	Button testAuthenticationButton;
-	private Button testGpsCurrentButton;
+	private Button testAuthenticationButton;
+	private Button testGpsButton;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main1);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main1);
 
-		this.testAuthenticationButton = (Button) this
-				.findViewById(R.id.testAuthenticationButton);
-		testGpsCurrentButton = (Button) findViewById(R.id.testGpsCurrentButton);
-		this.testAuthenticationButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				authenticate();
-			}
-		});
-		testAuthenticationButton.setOnClickListener(new OnClickListener() {
+        testAuthenticationButton = (Button) findViewById(R.id.testAuthenticationButton);
+        testGpsButton = (Button) findViewById(R.id.testGpsButton);
 
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getApplicationContext(),
-						GpsTestActivity.class);
-				startActivity(intent);
-			}
-		});
+        testAuthenticationButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
+                startActivity(intent);
+            }
+        });
 
-	}
+        testGpsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), GpsTestActivity.class);
+                startActivity(intent);
+            }
+        });
+
+    }
 
 	private void authenticate() {
 
