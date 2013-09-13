@@ -1,6 +1,9 @@
 package com.glassfitgames.glassfitplatformdemo;
 
+import java.io.File;
+
 import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -9,6 +12,7 @@ import android.widget.TextView;
 
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.models.Position;
+import com.roscopeco.ormdroid.ORMDroidApplication;
 
 public class GpsTestActivity extends Activity {
 
@@ -18,6 +22,8 @@ public class GpsTestActivity extends Activity {
 	private Button startTrackingButton;
 	private Button stopTrackingButton;
 	private Button getCurrentPositionButton;
+	private Button distanceButton;
+	private boolean targetset = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,7 @@ public class GpsTestActivity extends Activity {
 		startTrackingButton = (Button) findViewById(R.id.startTrackingButton);
 		stopTrackingButton = (Button) findViewById(R.id.stopTrackingButton);
 		getCurrentPositionButton = (Button) findViewById(R.id.getCurrentPositionButton);
+		distanceButton = (Button) findViewById(R.id.DistanceButton);
 
 		gpsHelper = new Helper(getApplicationContext());
 
@@ -68,6 +75,19 @@ public class GpsTestActivity extends Activity {
 					e.printStackTrace();
 				}
 
+			}
+		});
+
+		distanceButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (!targetset) {
+					gpsHelper.setTargetTrack(0);
+					targetset = true;
+				}
+				long distance = gpsHelper.getTargetElapsedDistance();
+				String text = "Elapsed distance: " + distance;
+				testLocationText.setText(text);
 			}
 		});
 
