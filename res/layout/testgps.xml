@@ -17,6 +17,12 @@
         android:text="Initialise GPS" />
 
     <Button
+        android:id="@+id/initTargetButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Initialise Target" />
+
+    <Button
         android:id="@+id/startTrackingButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,12 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Stop Tracking" />
-
-    <Button
-        android:id="@+id/getCurrentPositionButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Get Current Position" />
 
     <Button
         android:id="@+id/DistanceButton"
