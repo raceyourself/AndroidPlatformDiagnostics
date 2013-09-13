@@ -1,3 +1,4 @@
+
 package com.glassfitgames.glassfitplatformdemo;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
@@ -17,70 +18,69 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	private Button testAuthenticationButton;
-	private Button testGpsButton;
+    private Button testAuthenticationButton;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main1);
+    private Button testGpsButton;
 
-		testAuthenticationButton = (Button) findViewById(R.id.testAuthenticationButton);
-		testGpsButton = (Button) findViewById(R.id.testGpsButton);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main1);
 
-		testAuthenticationButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getApplicationContext(),
-						AuthenticationActivity.class);
-				startActivity(intent);
-			}
-		});
+        testAuthenticationButton = (Button)findViewById(R.id.testAuthenticationButton);
+        testGpsButton = (Button)findViewById(R.id.testGpsButton);
 
-		testGpsButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent intent = new Intent(getApplicationContext(),
-						GpsTestActivity.class);
-				startActivity(intent);
-			}
-		});
+        testAuthenticationButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
+                startActivity(intent);
+            }
+        });
 
-	}
+        testGpsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), GpsTestActivity.class);
+                startActivity(intent);
+            }
+        });
 
-	private void authenticate() {
+    }
 
-		String apiAccessToken = null;
+    private void authenticate() {
 
-		try {
-			Helper authHelper = new Helper();
-			authHelper.authenticate(this);
-			apiAccessToken = UserDetail.get().getApiAccessToken();
-		} catch (NetworkErrorException e) {
+        String apiAccessToken = null;
 
-		}
+        try {
+            Helper authHelper = new Helper();
+            authHelper.authenticate(this);
+            apiAccessToken = UserDetail.get().getApiAccessToken();
+        } catch (NetworkErrorException e) {
 
-		// display success/failure message to user
-		CharSequence text;
-		Context context = getApplicationContext();
-		int duration = Toast.LENGTH_SHORT;
+        }
 
-		if (apiAccessToken != null) {
-			text = "Success! API access token: " + apiAccessToken;
-		} else {
-			text = "Failure! Couldn't authenticate";
-		}
+        // display success/failure message to user
+        CharSequence text;
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
 
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
+        if (apiAccessToken != null) {
+            text = "Success! API access token: " + apiAccessToken;
+        } else {
+            text = "Failure! Couldn't authenticate";
+        }
 
-	}
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
 }
