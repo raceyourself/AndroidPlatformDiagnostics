@@ -21,30 +21,32 @@ public class MainActivity extends Activity {
 	private Button testGpsButton;
 
 	@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main1);
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main1);
 
-        testAuthenticationButton = (Button) findViewById(R.id.testAuthenticationButton);
-        testGpsButton = (Button) findViewById(R.id.testGpsButton);
+		testAuthenticationButton = (Button) findViewById(R.id.testAuthenticationButton);
+		testGpsButton = (Button) findViewById(R.id.testGpsButton);
 
-        testAuthenticationButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
-                startActivity(intent);
-            }
-        });
+		testAuthenticationButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(),
+						AuthenticationActivity.class);
+				startActivity(intent);
+			}
+		});
 
-        testGpsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), GpsTestActivity.class);
-                startActivity(intent);
-            }
-        });
+		testGpsButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getApplicationContext(),
+						GpsTestActivity.class);
+				startActivity(intent);
+			}
+		});
 
-    }
+	}
 
 	private void authenticate() {
 
