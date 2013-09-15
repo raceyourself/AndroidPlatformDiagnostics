@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.glassfitgames.glassfitplatform.gpstracker.GPSTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
+import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker.TargetSpeed;
 
 public class GpsTestActivity extends Activity {
 
@@ -22,6 +23,8 @@ public class GpsTestActivity extends Activity {
     private TextView testLocationText;
 
     private Button initGpsButton;
+    
+    private Button initFakeGpsButton;
 
     private Button initTargetButton;
 
@@ -37,6 +40,7 @@ public class GpsTestActivity extends Activity {
         setContentView(R.layout.testgps);
         testLocationText = (TextView)findViewById(R.id.testLocationText);
         initGpsButton = (Button)findViewById(R.id.initGpsButton);
+        initFakeGpsButton = (Button)findViewById(R.id.initFakeGpsButton);
         initTargetButton = (Button)findViewById(R.id.initTargetButton);
         startTrackingButton = (Button)findViewById(R.id.startTrackingButton);
         stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
@@ -48,12 +52,21 @@ public class GpsTestActivity extends Activity {
                 gpsTracker = Helper.getGPSTracker(getApplicationContext());
             }
         });
+        
+        initFakeGpsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gpsTracker = Helper.getGPSTracker(getApplicationContext());
+                gpsTracker.setIndoorMode(true);
+                gpsTracker.setIndoorSpeed(TargetSpeed.WALKING);
+            }
+        });
 
         initTargetButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    targetTracker = Helper.getTargetTracker("pb");
+                    targetTracker = Helper.getTargetTracker("WALKING");
                 } catch (Exception e) {
                     Log.e("GlassFitPlatform", e.getMessage());
                 }
@@ -77,12 +90,18 @@ public class GpsTestActivity extends Activity {
         distanceButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                
+                if (gpsTracker.getCurrentPosition() == null) {
+                    testLocationText.setText("GPS position not yet accurate enough, please wait");
+                    return;
+                }
+                
                 long gpsDistance = gpsTracker.getElapsedDistance();
                 long gpsTime = gpsTracker.getElapsedTime();
                 long targetDistance = targetTracker.getCumulativeDistanceAtTime(gpsTime);
 
-                String text = "Elapsed distance: " + gpsDistance + ". Target distance = "
-                        + targetDistance;
+                String text = "Elapsed distance: " + gpsDistance + "m. Target distance = "
+                        + targetDistance + "m.\nAccuracy = " + gpsTracker.getCurrentPosition().getEpe() + "m.";
                 testLocationText.setText(text);
             }
         });

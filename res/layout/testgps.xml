@@ -4,17 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:id="@+id/testLocationText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
-
     <Button
         android:id="@+id/initGpsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Initialise GPS" />
+
+    <Button
+        android:id="@+id/initFakeGpsButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Initialise Fake GPS" />
 
     <Button
         android:id="@+id/initTargetButton"
@@ -39,5 +39,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get elapsed distance" />
+
+    <TextView
+        android:id="@+id/testLocationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
 
 </LinearLayout>
