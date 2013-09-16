@@ -100,8 +100,10 @@ public class GpsTestActivity extends Activity {
                 long gpsTime = gpsTracker.getElapsedTime();
                 long targetDistance = targetTracker.getCumulativeDistanceAtTime(gpsTime);
 
-                String text = "Elapsed distance: " + gpsDistance + "m. Target distance = "
-                        + targetDistance + "m.\nAccuracy = " + gpsTracker.getCurrentPosition().getEpe() + "m.";
+                String text = "Elapsed distance: " + gpsDistance + 
+                              "m.\nTarget distance = " + targetDistance + 
+                              "m.\nAccuracy = " + gpsTracker.getCurrentPosition().getEpe() + "m." +
+                              "m.\nBearing = " + gpsTracker.getCurrentBearing() + "degrees.";
                 testLocationText.setText(text);
             }
         });

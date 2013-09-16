@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, API_ACCESS_TOKEN_REQUEST_ID);
             }
         });
 
@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), GpsTestActivity.class);
-                startActivityForResult(intent, API_ACCESS_TOKEN_REQUEST_ID);
+                startActivity(intent);
             }
         });
 
