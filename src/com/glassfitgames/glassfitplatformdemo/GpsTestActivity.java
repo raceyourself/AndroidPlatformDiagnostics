@@ -1,4 +1,3 @@
-
 package com.glassfitgames.glassfitplatformdemo;
 
 import android.app.Activity;
@@ -15,78 +14,89 @@ import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 
 public class GpsTestActivity extends Activity {
 
-    private GPSTracker gpsTracker;
+	private GPSTracker gpsTracker;
 
-    private TargetTracker targetTracker;
+	private TargetTracker targetTracker;
 
-    private TextView testLocationText;
+	private TextView testLocationText;
 
-    private Button initGpsButton;
+	private Button initGpsButton;
 
-    private Button initTargetButton;
+	private Button initTargetButton;
 
-    private Button startTrackingButton;
+	private Button startTrackingButton;
 
-    private Button stopTrackingButton;
+	private Button stopTrackingButton;
 
-    private Button distanceButton;
+	private Button distanceButton;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.testgps);
-        testLocationText = (TextView)findViewById(R.id.testLocationText);
-        initGpsButton = (Button)findViewById(R.id.initGpsButton);
-        initTargetButton = (Button)findViewById(R.id.initTargetButton);
-        startTrackingButton = (Button)findViewById(R.id.startTrackingButton);
-        stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
-        distanceButton = (Button)findViewById(R.id.DistanceButton);
+	private Button syncButton;
 
-        initGpsButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gpsTracker = Helper.getGPSTracker(getApplicationContext());
-            }
-        });
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.testgps);
+		testLocationText = (TextView) findViewById(R.id.testLocationText);
+		initGpsButton = (Button) findViewById(R.id.initGpsButton);
+		initTargetButton = (Button) findViewById(R.id.initTargetButton);
+		startTrackingButton = (Button) findViewById(R.id.startTrackingButton);
+		stopTrackingButton = (Button) findViewById(R.id.stopTrackingButton);
+		distanceButton = (Button) findViewById(R.id.DistanceButton);
+		syncButton = (Button) findViewById(R.id.SyncButton);
 
-        initTargetButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    targetTracker = Helper.getTargetTracker("pb");
-                } catch (Exception e) {
-                    Log.e("GlassFitPlatform", e.getMessage());
-                }
-            }
-        });
+		initGpsButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gpsTracker = Helper.getGPSTracker(getApplicationContext());
+			}
+		});
 
-        startTrackingButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gpsTracker.startTracking();
-            }
-        });
+		initTargetButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					targetTracker = Helper.getTargetTracker("pb");
+				} catch (Exception e) {
+					Log.e("GlassFitPlatform", e.getMessage());
+				}
+			}
+		});
 
-        stopTrackingButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gpsTracker.stopTracking();
-            }
-        });
+		startTrackingButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gpsTracker.startTracking();
+			}
+		});
 
-        distanceButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                long gpsDistance = gpsTracker.getElapsedDistance();
-                long gpsTime = gpsTracker.getElapsedTime();
-                long targetDistance = targetTracker.getCumulativeDistanceAtTime(gpsTime);
+		stopTrackingButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				gpsTracker.stopTracking();
+			}
+		});
 
-                String text = "Elapsed distance: " + gpsDistance + ". Target distance = "
-                        + targetDistance;
-                testLocationText.setText(text);
-            }
-        });
+		distanceButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				long gpsDistance = gpsTracker.getElapsedDistance();
+				long gpsTime = gpsTracker.getElapsedTime();
+				long targetDistance = targetTracker
+						.getCumulativeDistanceAtTime(gpsTime);
 
-    }
+				String text = "Elapsed distance: " + gpsDistance
+						+ ". Target distance = " + targetDistance;
+				testLocationText.setText(text);
+			}
+		});
+
+		syncButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Helper.syncToServer(getApplicationContext());
+			}
+		});
+
+	}
 
 }
