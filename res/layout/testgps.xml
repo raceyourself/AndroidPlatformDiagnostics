@@ -39,6 +39,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get elapsed distance" />
+    
+    <Button
+        android:id="@+id/SyncButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sync data" />
 
     <TextView
         android:id="@+id/testLocationText"

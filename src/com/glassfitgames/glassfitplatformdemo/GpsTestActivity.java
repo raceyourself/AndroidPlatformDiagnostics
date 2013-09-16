@@ -1,4 +1,3 @@
-
 package com.glassfitgames.glassfitplatformdemo;
 
 import android.app.Activity;
@@ -33,6 +32,8 @@ public class GpsTestActivity extends Activity {
     private Button stopTrackingButton;
 
     private Button distanceButton;
+    
+    private Button syncButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class GpsTestActivity extends Activity {
         startTrackingButton = (Button)findViewById(R.id.startTrackingButton);
         stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
         distanceButton = (Button)findViewById(R.id.DistanceButton);
+        syncButton = (Button)findViewById(R.id.SyncButton);
 
         initGpsButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -108,6 +110,12 @@ public class GpsTestActivity extends Activity {
             }
         });
 
-    }
+		syncButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Helper.syncToServer(getApplicationContext());
+			}
+		});
 
+	}
 }
