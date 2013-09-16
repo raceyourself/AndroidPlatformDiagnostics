@@ -11,8 +11,10 @@ import android.widget.TextView;
 import com.glassfitgames.glassfitplatform.gpstracker.GPSTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
+import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker.TargetSpeed;
 
 public class GpsTestActivity extends Activity {
+
 
 	private GPSTracker gpsTracker;
 
@@ -98,5 +100,4 @@ public class GpsTestActivity extends Activity {
 		});
 
 	}
-
 }
