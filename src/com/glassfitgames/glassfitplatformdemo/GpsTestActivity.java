@@ -1,6 +1,8 @@
 
 package com.glassfitgames.glassfitplatformdemo;
 
+import java.text.DecimalFormat;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -106,14 +108,21 @@ public class GpsTestActivity extends Activity {
                     return;
                 }
 
-                long gpsDistance = gpsTracker.getElapsedDistance();
+                DecimalFormat zeroDp = new DecimalFormat("#");
+                DecimalFormat twoDp = new DecimalFormat("#.##");
+                double gpsDistance = gpsTracker.getElapsedDistance();
                 long gpsTime = gpsTracker.getElapsedTime();
-                long targetDistance = targetTracker.getCumulativeDistanceAtTime(gpsTime);
+                double targetDistance = targetTracker.getCumulativeDistanceAtTime(gpsTime);
+                String bearing = gpsTracker.hasBearing() ? zeroDp.format(gpsTracker.getCurrentBearing()) + " degrees" : "unknown, please move in a straight line";
 
-                String text = "Elapsed distance: " + gpsDistance + "m.\nTarget distance = "
-                        + targetDistance + "m.\nAccuracy = "
-                        + gpsTracker.getCurrentPosition().getEpe() + "m." + "m.\nBearing = "
-                        + gpsTracker.getCurrentBearing() + "degrees.";
+                String text = "Target elapsed distance = " + twoDp.format(targetDistance) + "m.\n"
+                        + "GPS elapsed distance = " + twoDp.format(gpsDistance) + "m (\u00b1" + zeroDp.format(gpsTracker.getCurrentPosition().getEpe()) + "m.)\n"
+                        + "Distance to avatar = " + twoDp.format(targetDistance - gpsDistance) + "m.\n\n"
+                        + "Target current speed = " + twoDp.format(targetTracker.getCurrentSpeed(gpsTracker.getElapsedTime())) + "m/s."
+                        + "GPS current speed = " + twoDp.format(gpsTracker.getCurrentSpeed()) + "m/s.\n"        
+                        + "Smoothed bearing to target = " + bearing + ".\n";
+                        
+                        
                 testLocationText.setText(text);
             }
         });
@@ -121,7 +130,7 @@ public class GpsTestActivity extends Activity {
         syncButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Helper.syncToServer(getApplicationContext());
+                //Helper.syncToServer(getApplicationContext());
             }
         });
 
