@@ -71,7 +71,8 @@ public class GpsTestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    targetTracker = Helper.getTargetTracker("WALKING");
+                    targetTracker = Helper.getTargetTracker();
+                    targetTracker.setSpeed(TargetSpeed.JOGGING);
                 } catch (Exception e) {
                     Log.e("GlassFitPlatform", e.getMessage());
                 }
