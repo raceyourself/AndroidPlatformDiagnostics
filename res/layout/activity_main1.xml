@@ -23,4 +23,12 @@
         android:layout_marginTop="21dp"
         android:text="Test GPS" />
 
+    <Button
+        android:id="@+id/testSensorButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/testGpsButton"
+        android:layout_marginTop="21dp"
+        android:text="Test Sensors" />
+
 </RelativeLayout>

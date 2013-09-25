@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.auth.Helper;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
+import com.glassfitgames.glassfitplatform.sensors.OrientationHelper;
 import com.roscopeco.ormdroid.ORMDroidApplication;
 
 public class MainActivity extends Activity {
@@ -28,6 +29,8 @@ public class MainActivity extends Activity {
     private Button testAuthenticationButton;
 
     private Button testGpsButton;
+    
+    private Button testSensorButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,7 @@ public class MainActivity extends Activity {
 
         testAuthenticationButton = (Button)findViewById(R.id.testAuthenticationButton);
         testGpsButton = (Button)findViewById(R.id.testGpsButton);
+        testSensorButton = (Button)findViewById(R.id.testSensorButton);
 
         testAuthenticationButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -52,6 +56,16 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), GpsTestActivity.class);
+                startActivity(intent);
+            }
+        });
+        
+        
+        
+        testSensorButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), OrientationHelper.class);
                 startActivity(intent);
             }
         });
