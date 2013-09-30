@@ -28,8 +28,6 @@ public class GpsTestActivity extends Activity {
 
     private Button initFakeGpsButton;
 
-    private Button initTargetButton;
-
     private Button startTrackingButton;
 
     private Button stopTrackingButton;
@@ -45,7 +43,6 @@ public class GpsTestActivity extends Activity {
         testLocationText = (TextView)findViewById(R.id.testLocationText);
         initGpsButton = (Button)findViewById(R.id.initGpsButton);
         initFakeGpsButton = (Button)findViewById(R.id.initFakeGpsButton);
-        initTargetButton = (Button)findViewById(R.id.initTargetButton);
         startTrackingButton = (Button)findViewById(R.id.startTrackingButton);
         stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
         distanceButton = (Button)findViewById(R.id.DistanceButton);
@@ -55,27 +52,20 @@ public class GpsTestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 gpsTracker = Helper.getGPSTracker(getApplicationContext());
+                targetTracker = Helper.getTargetTracker();
+                targetTracker.setSpeed(TargetSpeed.JOGGING);
             }
         });
 
         initFakeGpsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                gpsTracker = Helper.getGPSTracker(getApplicationContext());
+                if (gpsTracker == null) {
+                    testLocationText.setText("No GPS tracker object, please press init GPS");
+                    return;
+                }
                 gpsTracker.setIndoorMode(true);
                 gpsTracker.setIndoorSpeed(TargetSpeed.WALKING);
-            }
-        });
-
-        initTargetButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    targetTracker = Helper.getTargetTracker();
-                    targetTracker.setSpeed(TargetSpeed.JOGGING);
-                } catch (Exception e) {
-                    Log.e("GlassFitPlatform", e.getMessage());
-                }
             }
         });
 
@@ -84,28 +74,40 @@ public class GpsTestActivity extends Activity {
             public void onClick(View v) {
 
                 if (gpsTracker == null) {
-                    gpsTracker = Helper.getGPSTracker(getApplicationContext());
-
-                } else {
-
+                    testLocationText.setText("No GPS tracker object, please press init GPS");
+                    return;
                 }
+                
+                if (!gpsTracker.hasPosition()) {
+                    testLocationText.setText("GPS position not yet accurate enough, please wait");
+                    return;
+                }
+                
                 gpsTracker.startTracking();
-            }
-        });
-
-        stopTrackingButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gpsTracker.stopTracking();
             }
         });
 
         distanceButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                
+                if (gpsTracker == null) {
+                    testLocationText.setText("GPSTracker is null, please press init");
+                    return;
+                }
+                
+                if (!gpsTracker.isTracking()) {
+                    testLocationText.setText("GPSTracker is not tracking, please press Start Tracking");
+                    return;
+                }
 
                 if (!gpsTracker.hasPosition()) {
-                    testLocationText.setText("GPS position not yet accurate enough, please wait");
+                    testLocationText.setText("GPS position not yet accurate enough to start tracking, please wait");
+                    return;
+                }
+                
+                if (targetTracker == null) {
+                    testLocationText.setText("TargetTracker is null, please press init");
                     return;
                 }
 
@@ -128,6 +130,19 @@ public class GpsTestActivity extends Activity {
             }
         });
 
+        stopTrackingButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+                if (gpsTracker == null) {
+                    testLocationText.setText("No GPS tracker object, please press init GPS");
+                    return;
+                }
+                
+                gpsTracker.stopTracking();
+            }
+        });
+        
         syncButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

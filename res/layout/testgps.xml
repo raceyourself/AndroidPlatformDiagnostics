@@ -8,19 +8,13 @@
         android:id="@+id/initGpsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Initialise GPS" />
+        android:text="Init GPS and Target" />
 
     <Button
         android:id="@+id/initFakeGpsButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Initialise Fake GPS" />
-
-    <Button
-        android:id="@+id/initTargetButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Initialise Target" />
+        android:text="Set indoor mode" />
 
     <Button
         android:id="@+id/startTrackingButton"
@@ -29,16 +23,16 @@
         android:text="Start Tracking" />
 
     <Button
-        android:id="@+id/stopTrackingButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Stop Tracking" />
-
-    <Button
         android:id="@+id/DistanceButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Get elapsed distance" />
+    
+    <Button
+        android:id="@+id/stopTrackingButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop Tracking" />
     
     <Button
         android:id="@+id/SyncButton"
