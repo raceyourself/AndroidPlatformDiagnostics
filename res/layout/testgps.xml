@@ -33,6 +33,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Stop Tracking" />
+
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reset track" />
     
     <Button
         android:id="@+id/SyncButton"

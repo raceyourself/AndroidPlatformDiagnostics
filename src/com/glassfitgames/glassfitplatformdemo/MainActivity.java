@@ -22,6 +22,12 @@ import com.glassfitgames.glassfitplatform.models.UserDetail;
 import com.glassfitgames.glassfitplatform.sensors.OrientationHelper;
 import com.roscopeco.ormdroid.ORMDroidApplication;
 
+/**
+ * Default activity for the Platform Demo.
+ * <p>
+ * Shows the user buttons to start each of the demos, for example the GPS and Authentication demos.
+ * Will be expanded with more demos as the platform develops.
+ */
 public class MainActivity extends Activity {
 
     static final int API_ACCESS_TOKEN_REQUEST_ID = 0;

@@ -16,6 +16,15 @@ import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker.TargetSpeed;
 
+
+/**
+ * Demo use-case for the GPSTracker and TargetTracker classes in GlassFitPlatform. Understanding
+ * this is a good place to start if you want to build games that rely on the GPS/target
+ * functionality of the platform.
+ * <p>
+ * Displays simple buttons to initialize GPS/target trackers, start/stop tracking and display
+ * current speed/distance/time metric of the device vs. the target.
+ */
 public class GpsTestActivity extends Activity {
 
     private GPSTracker gpsTracker;
@@ -34,6 +43,8 @@ public class GpsTestActivity extends Activity {
 
     private Button distanceButton;
 
+    private Button resetButton;
+    
     private Button syncButton;
 
     @Override
@@ -46,13 +57,15 @@ public class GpsTestActivity extends Activity {
         startTrackingButton = (Button)findViewById(R.id.startTrackingButton);
         stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
         distanceButton = (Button)findViewById(R.id.DistanceButton);
+        resetButton = (Button)findViewById(R.id.resetButton);
         syncButton = (Button)findViewById(R.id.SyncButton);
 
         initGpsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                gpsTracker = Helper.getGPSTracker(getApplicationContext());
-                targetTracker = Helper.getTargetTracker();
+                Helper helper = Helper.getInstance();
+                gpsTracker = helper.getGPSTracker(getApplicationContext());
+                targetTracker = helper.getTargetTracker();
                 targetTracker.setSpeed(TargetSpeed.JOGGING);
             }
         });
@@ -64,7 +77,7 @@ public class GpsTestActivity extends Activity {
                     testLocationText.setText("No GPS tracker object, please press init GPS");
                     return;
                 }
-                gpsTracker.setIndoorMode(true);
+                gpsTracker.setIndoorMode(!gpsTracker.isIndoorMode());
                 gpsTracker.setIndoorSpeed(TargetSpeed.WALKING);
             }
         });
@@ -95,11 +108,6 @@ public class GpsTestActivity extends Activity {
                     testLocationText.setText("GPSTracker is null, please press init");
                     return;
                 }
-                
-                if (!gpsTracker.isTracking()) {
-                    testLocationText.setText("GPSTracker is not tracking, please press Start Tracking");
-                    return;
-                }
 
                 if (!gpsTracker.hasPosition()) {
                     testLocationText.setText("GPS position not yet accurate enough to start tracking, please wait");
@@ -121,9 +129,10 @@ public class GpsTestActivity extends Activity {
                 String text = "Target elapsed distance = " + twoDp.format(targetDistance) + "m.\n"
                         + "GPS elapsed distance = " + twoDp.format(gpsDistance) + "m (\u00b1" + zeroDp.format(gpsTracker.getCurrentPosition().getEpe()) + "m.)\n"
                         + "Distance to avatar = " + twoDp.format(targetDistance - gpsDistance) + "m.\n\n"
-                        + "Target current speed = " + twoDp.format(targetTracker.getCurrentSpeed(gpsTracker.getElapsedTime())) + "m/s."
-                        + "GPS current speed = " + twoDp.format(gpsTracker.getCurrentSpeed()) + "m/s.\n"        
-                        + "Smoothed bearing to target = " + bearing + ".\n";
+                        + "Target current speed = " + twoDp.format(targetTracker.getCurrentSpeed(gpsTracker.getElapsedTime())) + "m/s.\n"
+                        + "GPS current speed = " + twoDp.format(gpsTracker.getCurrentSpeed()) + "m/s.\n\n"        
+                        + "Smoothed bearing to target = " + bearing + ".\n"
+                        + "GPS elapsed time = " + twoDp.format((double)gpsTracker.getElapsedTime()/1000.0) + "s.)\n";
                         
                         
                 testLocationText.setText(text);
@@ -140,6 +149,18 @@ public class GpsTestActivity extends Activity {
                 }
                 
                 gpsTracker.stopTracking();
+            }
+        });
+
+        resetButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (gpsTracker == null) {
+                    testLocationText.setText("No GPS tracker object, please press init GPS");
+                    return;
+                }
+                
+                gpsTracker.reset();
             }
         });
         
