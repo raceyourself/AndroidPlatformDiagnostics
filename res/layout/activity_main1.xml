@@ -9,26 +9,35 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/testAuthenticationButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="17dp"
-        android:text="Test Authentication" />
-
-    <Button
         android:id="@+id/testGpsButton"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/testAuthenticationButton"
-        android:layout_marginTop="21dp"
-        android:text="Test GPS" />
+        android:layout_alignParentLeft="true"
+        android:text="GPS Diagnostics" />
 
     <Button
         android:id="@+id/testSensorButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/testGpsButton"
+        android:text="Orientation Diagnostics" />
+
+    <Button
+        android:id="@+id/trackpadDiagnosticsButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/testGpsButton"
-        android:layout_marginTop="21dp"
-        android:text="Test Sensors" />
+        android:layout_alignParentLeft="true"
+        android:text="Trackpad Diagnostics" />
+
+    <Button
+        android:id="@+id/testAuthenticationButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/testSensorButton"
+        android:layout_toRightOf="@+id/testGpsButton"
+        android:text="Test Authentication" />
 
 </RelativeLayout>

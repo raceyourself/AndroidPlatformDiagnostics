@@ -17,38 +17,46 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher1"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@android:style/Theme.Light.NoTitleBar" >
         <meta-data
             android:name="ormdroid.database.name"
             android:value="glassfit_platform_database" />
-        
+
+        <!-- main activity -->
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.MainActivity"
-            android:label="@string/title_activity_main"
-        	android:configChanges="orientation|screenSize" >
+            android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- sub-activities -->
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.GpsTestActivity"
             android:label="@string/title_activity_main" >
         </activity>
         <activity
+            android:name="com.glassfitgames.glassfitplatformdemo.OrientationDiagnostics"
+            android:label="@string/title_activity_orientation_diagnostics" >
+        </activity>        
+        <activity
+            android:name="com.glassfitgames.glassfitplatformdemo.TrackpadDiagnostics"
+            android:label="@string/title_activity_trackpad_diagnostics" >
+        </activity>
+        <activity
             android:name="com.glassfitgames.glassfitplatform.auth.AuthenticationActivity"
             android:label="@string/title_activity_authentication" >
         </activity>
-        <activity
-            android:name="com.glassfitgames.glassfitplatform.sensors.OrientationHelper"
-            android:label="@string/title_orientation_helper" >
-        </activity>
+
+        <!-- services -->
         <service
             android:name="com.glassfitgames.glassfitplatform.sensors.SensorService"
             android:icon="@drawable/ic_launcher"
             android:label="@string/sensor_service_name" >
-        </service>         
+        </service>
+
     </application>
 
 </manifest>

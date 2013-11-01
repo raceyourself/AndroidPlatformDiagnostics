@@ -1,14 +1,10 @@
 
 package com.glassfitgames.glassfitplatformdemo;
 
-import java.io.File;
-
-import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,10 +14,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
-import com.glassfitgames.glassfitplatform.auth.Helper;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
-import com.glassfitgames.glassfitplatform.sensors.OrientationHelper;
-import com.roscopeco.ormdroid.ORMDroidApplication;
 
 /**
  * Default activity for the Platform Demo.
@@ -38,6 +31,8 @@ public class MainActivity extends Activity {
     private Button testGpsButton;
     
     private Button testSensorButton;
+    
+    private Button trackpadDiagnosticsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +46,7 @@ public class MainActivity extends Activity {
         testAuthenticationButton = (Button)findViewById(R.id.testAuthenticationButton);
         testGpsButton = (Button)findViewById(R.id.testGpsButton);
         testSensorButton = (Button)findViewById(R.id.testSensorButton);
+        trackpadDiagnosticsButton = (Button)findViewById(R.id.trackpadDiagnosticsButton);
 
         testAuthenticationButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -68,12 +64,18 @@ public class MainActivity extends Activity {
             }
         });
         
-        
-        
         testSensorButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), OrientationHelper.class);
+                Intent intent = new Intent(getApplicationContext(), OrientationDiagnostics.class);
+                startActivity(intent);
+            }
+        });
+        
+        trackpadDiagnosticsButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), TrackpadDiagnostics.class);
                 startActivity(intent);
             }
         });

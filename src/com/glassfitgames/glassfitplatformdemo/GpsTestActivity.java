@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -43,25 +45,16 @@ public class GpsTestActivity extends Activity {
     private Context context;
     
     private Helper helper;
-    
     private GPSTracker gpsTracker;
-
     private TargetTracker targetTracker;
 
     private TextView testLocationText;
 
     private Button initGpsButton;
-
     private Button initFakeGpsButton;
-
     private Button startTrackingButton;
-
     private Button stopTrackingButton;
-
-    private Button distanceButton;
-
     private Button resetButton;
-    
     private Button syncButton;
     
     private Timer timer;
@@ -81,7 +74,6 @@ public class GpsTestActivity extends Activity {
         initFakeGpsButton = (Button)findViewById(R.id.initFakeGpsButton);
         startTrackingButton = (Button)findViewById(R.id.startTrackingButton);
         stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
-        distanceButton = (Button)findViewById(R.id.DistanceButton);
         resetButton = (Button)findViewById(R.id.resetButton);
         syncButton = (Button)findViewById(R.id.SyncButton);
 
@@ -89,7 +81,11 @@ public class GpsTestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 helper = Helper.getInstance(context);
-                gpsTracker = helper.getGPSTracker();
+                try {
+                    gpsTracker = helper.getGPSTracker();
+                } catch (Exception e) {
+                    testLocationText.setText("Couldn't instatiate GPS tracker");
+                }
                 targetTracker = helper.getTargetTracker();
                 targetTracker.setSpeed(TargetSpeed.JOGGING);
             }
@@ -167,13 +163,6 @@ public class GpsTestActivity extends Activity {
             }
         });
 
-        distanceButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateLocationText();
-            }
-        });
-
         stopTrackingButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,6 +177,9 @@ public class GpsTestActivity extends Activity {
                     out.close();
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (NullPointerException e) {
+                    // out might be null if we've not started tracking
                     e.printStackTrace();
                 }
             }
@@ -286,8 +278,8 @@ public class GpsTestActivity extends Activity {
         String bearing = gpsTracker.hasBearing() ? zeroDp.format(gpsTracker.getCurrentBearing()) + " degrees" : "unknown, please move in a straight line";
 
         String text = 
-//                +  "Target elapsed distance = " + twoDp.format(targetDistance) + "m.\n"
-                  "Device state: " + gpsTracker.getState().toString() + "\n"
+                  "Target elapsed distance = " + twoDp.format(targetDistance) + "m.\n"
+                + "Device state: " + gpsTracker.getState().toString() + "\n"
                   
                 + "GPS distance = " + twoDp.format(gpsTracker.getGpsDistance()) + "m (\u00b1" + zeroDp.format(gpsTracker.getCurrentPosition().getEpe()) + "m.)\n"
                 + "Display distance = " + twoDp.format(gpsTracker.getElapsedDistance()) + "m.\n"
@@ -296,7 +288,7 @@ public class GpsTestActivity extends Activity {
                 + "GPS speed = " + twoDp.format(gpsTracker.getGpsSpeed()) + "m/s.\n"
                 + "Display speed = " + twoDp.format(gpsTracker.getCurrentSpeed()) + "m/s.\n\n"   
                 + "Smoothed bearing to target = " + bearing + ".\n\n"
-                //+ "GPS elapsed time = " + twoDp.format((double)gpsTracker.getElapsedTime()/1000.0) + "s.\n\n"
+                + "GPS elapsed time = " + twoDp.format((double)gpsTracker.getElapsedTime()/1000.0) + "s.\n\n"
                 
 //                + "Device acceleration X = " + twoDp.format((double)gpsTracker.getDeviceAcceleration()[0]) + "ms-2.\n"
 //                + "Device acceleration Y = " + twoDp.format((double)gpsTracker.getDeviceAcceleration()[1]) + "ms-2.\n"
@@ -326,24 +318,42 @@ public class GpsTestActivity extends Activity {
 //                + "dPitch = " + zeroDp.format(Math.toDegrees(helper.getDeltaQuaternion().toYpr()[1])) + "\n"
 //                + "dRoll = " + zeroDp.format(Math.toDegrees(helper.getDeltaQuaternion().toYpr()[2])) + "\n\n"
 //                
-                + "accPitch = " + zeroDp.format(Math.toDegrees(helper.getAccPitch())) + "\n"
-                + "accRoll = " + zeroDp.format(Math.toDegrees(helper.getAccRoll())) + "\n"
+//                 "accPitch = " + zeroDp.format(Math.toDegrees(helper.getAccPitch())) + "\n"
+//                + "accRoll = " + zeroDp.format(Math.toDegrees(helper.getAccRoll())) + "\n"
                 
-                + "fusedPitch = " + zeroDp.format(Math.toDegrees(helper.getFusedPitch())) + "\n"
-                + "fusedRoll = " + zeroDp.format(Math.toDegrees(helper.getFusedRoll())) + "\n\n"                
+//                + "fusedPitch = " + zeroDp.format(Math.toDegrees(helper.getFusedPitch())) + "\n"
+//                + "fusedRoll = " + zeroDp.format(Math.toDegrees(helper.getFusedRoll())) + "\n\n" 
+                        
+//                  "Device X = " + twoDp.format(helper.getDeviceAccelerationVector().getX()) + "\n"
+//                + "Device Y = " + twoDp.format(helper.getDeviceAccelerationVector().getY()) + "\n"
+//                + "Device Z = " + twoDp.format(helper.getDeviceAccelerationVector().getZ()) + "\n"
+//                
+//                + "RW X = " + twoDp.format(helper.getRealWorldAccelerationVector().getX()) + "\n"
+//                + "RW Y = " + twoDp.format(helper.getRealWorldAccelerationVector().getY()) + "\n"
+//                + "RW Z = " + twoDp.format(helper.getRealWorldAccelerationVector().getZ()) + "\n"
                 
-                + "GlassFit yaw = " + zeroDp.format(Math.toDegrees(helper.getGlassfitQuaternion().toYpr()[0])) + "\n"
-                + "GlassFit pitch = " + zeroDp.format(Math.toDegrees(helper.getGlassfitQuaternion().toYpr()[1])) + "\n"
-                + "GlassFit roll = " + zeroDp.format(Math.toDegrees(helper.getGlassfitQuaternion().toYpr()[2])) + "\n\n"      
+//                  "GlassFit yaw = " + zeroDp.format(Math.toDegrees(helper.getGlassfitQuaternion().toYpr()[0])) + "\n"
+//                + "GlassFit pitch = " + zeroDp.format(Math.toDegrees(helper.getGlassfitQuaternion().toYpr()[1])) + "\n"
+//                + "GlassFit roll = " + zeroDp.format(Math.toDegrees(helper.getGlassfitQuaternion().toYpr()[2])) + "\n\n"      
+//                
+//                + "GlassFit W = " + twoDp.format(helper.getGlassfitQuaternion().getW()) + "\n"
+//                + "GlassFit X = " + twoDp.format(helper.getGlassfitQuaternion().getX()) + "\n"
+//                + "GlassFit Y = " + twoDp.format(helper.getGlassfitQuaternion().getY()) + "\n"
+//                + "GlassFit Z = " + twoDp.format(helper.getGlassfitQuaternion().getZ()) + "\n\n" 
                 
-                + "Accel yaw = " + zeroDp.format(Math.toDegrees(helper.getCorrection().toYpr()[0])) + "\n"
-                + "Accel pitch = " + zeroDp.format(Math.toDegrees(helper.getCorrection().toYpr()[1])) + "\n"
-                + "Accel roll = " + zeroDp.format(Math.toDegrees(helper.getCorrection().toYpr()[2])) + "\n\n"                 
+//                + "Accel yaw = " + zeroDp.format(Math.toDegrees(helper.getCorrection().toYpr()[0])) + "\n"
+//                + "Accel pitch = " + zeroDp.format(Math.toDegrees(helper.getCorrection().toYpr()[1])) + "\n"
+//                + "Accel roll = " + zeroDp.format(Math.toDegrees(helper.getCorrection().toYpr()[2])) + "\n\n"                   
+//                
+//                + "Accel W = " + twoDp.format(helper.getCorrection().getW()) + "\n"
+//                + "Accel X = " + twoDp.format(helper.getCorrection().getX()) + "\n"
+//                + "Accel Y = " + twoDp.format(helper.getCorrection().getY()) + "\n"
+//                + "Accel Z = " + twoDp.format(helper.getCorrection().getZ()) + "\n\n"                 
                 
-                + "gyroDroid yaw = " + zeroDp.format(Math.toDegrees(helper.getGyroDroidQuaternion().toYpr()[0])) + "\n"
-                + "gyroDroid pitch = " + zeroDp.format(Math.toDegrees(helper.getGyroDroidQuaternion().toYpr()[1])) + "\n"
-                + "gyroDroid roll = " + zeroDp.format(Math.toDegrees(helper.getGyroDroidQuaternion().toYpr()[2])) + "\n\n"
-                
+//                + "gyroDroid yaw = " + zeroDp.format(Math.toDegrees(helper.getGyroDroidQuaternion().toYpr()[0])) + "\n"
+//                + "gyroDroid pitch = " + zeroDp.format(Math.toDegrees(helper.getGyroDroidQuaternion().toYpr()[1])) + "\n"
+//                + "gyroDroid roll = " + zeroDp.format(Math.toDegrees(helper.getGyroDroidQuaternion().toYpr()[2])) + "\n\n"
+//                
 //                + "android yaw = " + zeroDp.format(Math.toDegrees(helper.getAndroidQuaternion().toYpr()[0])) + "\n"
 //                + "android pitch = " + zeroDp.format(Math.toDegrees(helper.getAndroidQuaternion().toYpr()[1])) + "\n"
 //                + "android roll = " + zeroDp.format(Math.toDegrees(helper.getAndroidQuaternion().toYpr()[2])) + "\n"
@@ -364,11 +374,11 @@ public class GpsTestActivity extends Activity {
 //                        gpsTracker.tick.run();
 //                    }
 
-                    if (out != null && gpsTracker != null && gpsTracker.isTracking()) {
-                        // write values to file
-                        try {
-                            out.write((float)gpsTracker.getElapsedTime()/1000.0f + ", ");
-                            out.write(gpsTracker.getState() + ", ");
+//                    if (out != null && gpsTracker != null && gpsTracker.isTracking()) {
+//                        // write values to file
+//                        try {
+//                            out.write((float)gpsTracker.getElapsedTime()/1000.0f + ", ");
+//                            out.write(gpsTracker.getState() + ", ");
                             
 //                            out.write(gpsTracker.getDeviceAcceleration()[0] + ", ");
 //                            out.write(gpsTracker.getDeviceAcceleration()[1] + ", ");
@@ -376,26 +386,26 @@ public class GpsTestActivity extends Activity {
 //                            out.write(gpsTracker.getRealWorldAcceleration()[0] + ", ");
 //                            out.write(gpsTracker.getRealWorldAcceleration()[1] + ", ");
 //                            out.write(gpsTracker.getRealWorldAcceleration()[2] + ", ");
-                            
-                            out.write(gpsTracker.getForwardAcceleration() + ", ");
-                            out.write(gpsTracker.getTotalAcceleration() + ", ");
-                            
-                            out.write(gpsTracker.getMeanDfa() + ", ");
-                            out.write(gpsTracker.getMeanDta() + ", ");
-                            out.write(gpsTracker.getSdTotalAcc() + ", ");
-                            out.write(gpsTracker.getMaxDta() + ", ");
-//                            out.write(gpsTracker.getYaw() + ", ");
-//                            out.write(gpsTracker.getCurrentBearing() + ", ");
-                            out.write(gpsTracker.getGpsSpeed() + ", ");
-                            out.write(gpsTracker.getCurrentSpeed() + ", ");
-                            out.write(gpsTracker.getGpsDistance() + ", ");
-                            out.write(gpsTracker.getExtrapolatedGpsDistance() + ", ");
-                            out.write(gpsTracker.getElapsedDistance() + "\n");
-                        } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
+//                            
+//                            out.write(gpsTracker.getForwardAcceleration() + ", ");
+//                            out.write(gpsTracker.getTotalAcceleration() + ", ");
+//                            
+//                            out.write(gpsTracker.getMeanDfa() + ", ");
+//                            out.write(gpsTracker.getMeanDta() + ", ");
+//                            out.write(gpsTracker.getSdTotalAcc() + ", ");
+//                            out.write(gpsTracker.getMaxDta() + ", ");
+////                            out.write(gpsTracker.getYaw() + ", ");
+////                            out.write(gpsTracker.getCurrentBearing() + ", ");
+//                            out.write(gpsTracker.getGpsSpeed() + ", ");
+//                            out.write(gpsTracker.getCurrentSpeed() + ", ");
+//                            out.write(gpsTracker.getGpsDistance() + ", ");
+//                            out.write(gpsTracker.getExtrapolatedGpsDistance() + ", ");
+//                            out.write(gpsTracker.getElapsedDistance() + "\n");
+//                        } catch (IOException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                        }
+//                    }
                 }
             });
         }

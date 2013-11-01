@@ -4,51 +4,58 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/initGpsButton"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Init GPS and Target" />
+        android:orientation="horizontal"
+        android:weightSum="6" >
 
-    <Button
-        android:id="@+id/initFakeGpsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Set indoor mode" />
+        <Button
+            android:id="@+id/initGpsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Init" />
 
-    <Button
-        android:id="@+id/startTrackingButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Start Tracking" />
+        <Button
+            android:id="@+id/initFakeGpsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mode" />
 
-    <Button
-        android:id="@+id/DistanceButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Get elapsed distance" />
-    
-    <Button
-        android:id="@+id/stopTrackingButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Stop Tracking" />
+        <Button
+            android:id="@+id/startTrackingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Start" />
 
-    <Button
-        android:id="@+id/resetButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Reset track" />
-    
-    <Button
-        android:id="@+id/SyncButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sync data" />
+        <Button
+            android:id="@+id/stopTrackingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Stop" />
+
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Reset" />
+
+        <Button
+            android:id="@+id/SyncButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sync" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/testLocationText"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView" />
 
