@@ -4,16 +4,16 @@ package com.glassfitgames.glassfitplatformdemo;
 import java.text.DecimalFormat;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.glassfitgames.glassfitplatform.gpstracker.GPSTracker;
-import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
+import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker.TargetSpeed;
 
 
@@ -63,8 +63,8 @@ public class GpsTestActivity extends Activity {
         initGpsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Helper helper = Helper.getInstance();
-                gpsTracker = helper.getGPSTracker(getApplicationContext());
+                Helper helper = Helper.getInstance(getApplicationContext());
+                gpsTracker = helper.getGPSTracker();
                 targetTracker = helper.getTargetTracker();
                 targetTracker.setSpeed(TargetSpeed.JOGGING);
             }
@@ -166,8 +166,14 @@ public class GpsTestActivity extends Activity {
         
         syncButton.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                //Helper.syncToServer(getApplicationContext());
+            public void onClick(View v) {                                
+                Helper.syncToServer(getApplicationContext());
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send: http://www.glassfitgames.com/");
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+
             }
         });
 

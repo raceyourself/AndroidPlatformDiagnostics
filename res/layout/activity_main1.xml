@@ -31,4 +31,13 @@
         android:layout_marginTop="21dp"
         android:text="Test Sensors" />
 
+    <Button
+        android:id="@+id/resetDbButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/testSensorButton"
+        android:layout_below="@+id/testSensorButton"
+        android:layout_marginTop="21dp"
+        android:text="Reset DB" />
+
 </RelativeLayout>
