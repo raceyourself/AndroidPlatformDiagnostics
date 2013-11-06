@@ -1,10 +1,13 @@
 
 package com.glassfitgames.glassfitplatformdemo;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -63,6 +66,7 @@ public class MainActivity extends Activity  {
         
         
         
+        final Activity activity = this;
         testSensorButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,7 +76,10 @@ public class MainActivity extends Activity  {
                             Encoder enc = new Encoder();
                             enc.testEncodeVideoToMp4();
                             Log.w("HelperDebug", "It took " + (System.currentTimeMillis()-time)/1000 + " seconds to test encode");
-                            
+                            Intent viewIntent = new Intent(Intent.ACTION_VIEW);
+                            File file = new File("/sdcard/test.320x240.mp4");
+                            viewIntent.setDataAndType(Uri.fromFile(file), "video/*");
+                            activity.startActivity(Intent.createChooser(viewIntent, null));                                     
                     }
                 }).start();
             }
