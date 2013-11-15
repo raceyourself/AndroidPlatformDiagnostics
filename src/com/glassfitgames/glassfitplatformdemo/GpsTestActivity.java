@@ -15,9 +15,15 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,7 +35,11 @@ import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker.TargetSpeed;
 import com.glassfitgames.glassfitplatform.models.Orientation;
+import com.glassfitgames.glassfitplatform.models.Track;
+import com.glassfitgames.glassfitplatform.points.PointsHelper;
+import com.glassfitgames.glassfitplatform.utils.FileUtils;
 import com.roscopeco.ormdroid.Entity;
+import com.roscopeco.ormdroid.ORMDroidApplication;
 
 
 /**
@@ -47,6 +57,7 @@ public class GpsTestActivity extends Activity {
     private Helper helper;
     private GPSTracker gpsTracker;
     private TargetTracker targetTracker;
+    private PointsHelper pointsHelper;
 
     private TextView testLocationText;
 
@@ -76,11 +87,35 @@ public class GpsTestActivity extends Activity {
         stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
         resetButton = (Button)findViewById(R.id.resetButton);
         syncButton = (Button)findViewById(R.id.SyncButton);
+        
+        // try to activate GPS
+        String o = "Can toggle GPS: ";
+        if (canToggleGPS()) {
+            o += "yes\n";
+        } else {
+            o += "no\n";
+        }
+        testLocationText.setText(o);
+        
+        try {
+            o+= "Attempting to switch on... ";
+            testLocationText.setText(o);
+            turnGPSOn();
+            o+= "Success!\n";
+            testLocationText.setText(o);
+        } catch (Exception e) {
+            o+= "Failure!\n";
+            testLocationText.setText(o);
+            e.printStackTrace();
+        }
 
         initGpsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                
                 helper = Helper.getInstance(context);
+                pointsHelper = PointsHelper.getInstance(context);
+                pointsHelper.setBaseSpeed(2.5f);
                 try {
                     gpsTracker = helper.getGPSTracker();
                 } catch (Exception e) {
@@ -88,6 +123,12 @@ public class GpsTestActivity extends Activity {
                 }
                 targetTracker = helper.getTargetTracker();
                 targetTracker.setSpeed(TargetSpeed.JOGGING);
+                
+                // start polling for data
+                timer = new Timer();
+                task = new GpsTask();
+                timer.scheduleAtFixedRate(task, 1000, 50); 
+                
             }
         });
 
@@ -201,13 +242,18 @@ public class GpsTestActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //Helper.syncToServer(getApplicationContext());
+                ORMDroidApplication.initialize(context);
+                File f;
+                try {
+                    f = FileUtils.createSdCardFile(getApplicationContext(), "AllTracks.csv");
+                    (new Track()).allToCsv(f);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                
             }
         });
-        
-        // start polling for data
-        timer = new Timer();
-        task = new GpsTask();
-        timer.scheduleAtFixedRate(task, 1000, 50);       
 
     }
     
@@ -289,6 +335,7 @@ public class GpsTestActivity extends Activity {
                 + "Display speed = " + twoDp.format(gpsTracker.getCurrentSpeed()) + "m/s.\n\n"   
                 + "Smoothed bearing to target = " + bearing + ".\n\n"
                 + "GPS elapsed time = " + twoDp.format((double)gpsTracker.getElapsedTime()/1000.0) + "s.\n\n"
+                + "Points scored during current activity = " + pointsHelper.getCurrentActivityPoints() + "\n\n"
                 
 //                + "Device acceleration X = " + twoDp.format((double)gpsTracker.getDeviceAcceleration()[0]) + "ms-2.\n"
 //                + "Device acceleration Y = " + twoDp.format((double)gpsTracker.getDeviceAcceleration()[1]) + "ms-2.\n"
@@ -411,4 +458,55 @@ public class GpsTestActivity extends Activity {
         }
     }
     
+    private void turnGPSOn(){
+        
+        Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
+        intent.putExtra("enabled", true);
+        sendBroadcast(intent);
+        
+        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if(!provider.contains("gps")){ //if gps is disabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider"); 
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3")); 
+            sendBroadcast(poke);
+        }
+    }
+
+    private void turnGPSOff(){
+        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+        if(provider.contains("gps")){ //if gps is enabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3")); 
+            sendBroadcast(poke);
+        }
+    }
+    //use the following to test if the existing version of the power control widget is one which will allow you to toggle the gps.
+
+    private boolean canToggleGPS() {
+        PackageManager pacman = getPackageManager();
+        PackageInfo pacInfo = null;
+
+        try {
+            pacInfo = pacman.getPackageInfo("com.android.settings", PackageManager.GET_RECEIVERS);
+        } catch (NameNotFoundException e) {
+            return false; //package not found
+        }
+
+        if(pacInfo != null){
+            for(ActivityInfo actInfo : pacInfo.receivers){
+                //test if recevier is exported. if so, we can toggle GPS.
+                if(actInfo.name.equals("com.android.settings.widget.SettingsAppWidgetProvider") && actInfo.exported){
+                    return true;
+                }
+            }
+        }
+
+        return false; //default
+    }
+
 }

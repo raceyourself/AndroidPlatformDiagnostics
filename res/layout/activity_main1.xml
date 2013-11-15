@@ -40,4 +40,13 @@
         android:layout_toRightOf="@+id/testGpsButton"
         android:text="Test Authentication" />
 
+    <TextView
+        android:id="@+id/mainTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/trackpadDiagnosticsButton"
+        android:text="MainTextView" />
+
 </RelativeLayout>

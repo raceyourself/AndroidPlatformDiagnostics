@@ -8,13 +8,17 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
+import com.glassfitgames.glassfitplatform.sensors.Quaternion;
 
 /**
  * Default activity for the Platform Demo.
@@ -33,6 +37,8 @@ public class MainActivity extends Activity {
     private Button testSensorButton;
     
     private Button trackpadDiagnosticsButton;
+    
+    private TextView mainTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,7 @@ public class MainActivity extends Activity {
         testGpsButton = (Button)findViewById(R.id.testGpsButton);
         testSensorButton = (Button)findViewById(R.id.testSensorButton);
         trackpadDiagnosticsButton = (Button)findViewById(R.id.trackpadDiagnosticsButton);
+        mainTextView = (TextView)findViewById(R.id.mainTextView);
 
         testAuthenticationButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -79,6 +86,22 @@ public class MainActivity extends Activity {
                 startActivity(intent);
             }
         });
+        
+        String deviceText = "";
+        deviceText += "Manufacturer: " + android.os.Build.MANUFACTURER + "\n";
+        deviceText += "Product: " + android.os.Build.PRODUCT + "\n";
+        deviceText += "Model: " + android.os.Build.MODEL + "\n";
+        
+        int rotation = ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay().getRotation();
+        switch (rotation) {
+            case Surface.ROTATION_0: deviceText += "Orientation: 0 degrees\n"; break;
+            case Surface.ROTATION_90: deviceText += "Orientation: +90 degrees\n"; break;
+            case Surface.ROTATION_180: deviceText += "Orientation: +180 degrees\n"; break;
+            case Surface.ROTATION_270: deviceText += "Orientation: +270 degrees\n"; break;
+            default: deviceText += "Orientation: unknown!\n"; break;
+        }
+        
+        mainTextView.setText(deviceText);
 
     }
 

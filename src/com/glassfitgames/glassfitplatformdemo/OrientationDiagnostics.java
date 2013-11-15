@@ -1,18 +1,24 @@
 
 package com.glassfitgames.glassfitplatformdemo;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.models.Orientation;
 import com.glassfitgames.glassfitplatform.sensors.SensorService;
 import com.glassfitgames.glassfitplatform.utils.FileUtils;
 import com.roscopeco.ormdroid.Entity;
+import com.roscopeco.ormdroid.ORMDroidApplication;
 
 import android.os.Bundle;
 import android.os.IBinder;
@@ -22,13 +28,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
 public class OrientationDiagnostics extends Activity {
     
-    private final boolean WRITE_TO_CSV = false;
+    private final boolean WRITE_TO_CSV = true;
     private final boolean WRITE_TO_DATABASE = false;
     private final boolean CLEAR_DATABASE_ON_START = false;    
     
@@ -37,7 +44,8 @@ public class OrientationDiagnostics extends Activity {
     
     private Timer timer;
     private OrientationTask task;
-    private List<Orientation> orientationCache = new ArrayList<Orientation>();    
+    private List<Orientation> orientationCache = new ArrayList<Orientation>();  
+    private Helper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +75,7 @@ public class OrientationDiagnostics extends Activity {
         super.onResume();
         bindService(new Intent(this, SensorService.class), sensorServiceConnection,
                         Context.BIND_AUTO_CREATE);
+        helper = Helper.getInstance(getApplicationContext());
     }
 
     @Override
@@ -76,12 +85,21 @@ public class OrientationDiagnostics extends Activity {
         unbindService(sensorServiceConnection);
         if (WRITE_TO_CSV) {
             try {
-                File f = FileUtils.createSdCardFile(this.getApplicationContext(), "OrientationData.csv");
-                (new Orientation()).headersToCsv(f);
+                orientationText.setText("Writing to CSV...");
+                String datestamp = (new SimpleDateFormat("yyyy-MM-dd_HHmmss")).format(new Date());
+                File f = FileUtils.createSdCardFile(this.getApplicationContext(), "OrientationData_" + datestamp + ".csv");
+                FileWriter fstream = new FileWriter(f);
+                BufferedWriter out = new BufferedWriter(fstream);
+                out.append((new Orientation()).headersToCsv() + "\n");
+                SQLiteDatabase db = ORMDroidApplication.getDefaultDatabase();
                 for (Orientation o : orientationCache) {
-                    o.toCsv(f);
+                    out.append(o.toCsv(db) + "\n");
                 }
+                db.close();
+                out.close();
+                orientationText.setText("Writing to CSV complete!");
             } catch (IOException e) {
+                orientationText.setText("Writing to CSV failed!");
                 e.printStackTrace();
             }
         }
@@ -135,7 +153,7 @@ public class OrientationDiagnostics extends Activity {
                         + sensorService.getMagValues()[2] + "uT.");
 
         String oText = new String();
-        DecimalFormat df = new DecimalFormat("+000.00");
+        DecimalFormat df = new DecimalFormat("+000.00; -000.00");
 
         oText += "Accel:   x:" + df.format(sensorService.getAccValues()[0]) + ",   y:"
                         + df.format(sensorService.getAccValues()[1]) + ",   z:"
@@ -149,11 +167,11 @@ public class OrientationDiagnostics extends Activity {
         oText += "\n";
 
         oText += "Fusion YPR: "
-                        + df.format(Math.toDegrees(sensorService.getGlassfitQuaternion().toYpr()[0]))
+                        + df.format(Math.toDegrees(sensorService.getGlassfitQuaternion().flipX().flipY().toYprLH()[0]))
                         + " / "
-                        + df.format(Math.toDegrees(sensorService.getGlassfitQuaternion().toYpr()[1]))
+                        + df.format(Math.toDegrees(sensorService.getGlassfitQuaternion().flipX().flipY().toYprLH()[1]))
                         + " / "
-                        + df.format(Math.toDegrees(sensorService.getGlassfitQuaternion().toYpr()[2]))
+                        + df.format(Math.toDegrees(sensorService.getGlassfitQuaternion().flipX().flipY().toYprLH()[2]))
                         + "\n";
 
         oText += "GyroDroid YPR: "
@@ -163,6 +181,14 @@ public class OrientationDiagnostics extends Activity {
                         + " / "
                         + df.format(Math.toDegrees(sensorService.getGyroDroidQuaternion().toYpr()[2]))
                         + "\n";
+        
+        oText += "Orienation YPR: "
+                        + df.format(Math.toDegrees(helper.getOrientation().toYpr()[0]))
+                        + " / "
+                        + df.format(Math.toDegrees(helper.getOrientation().toYpr()[1]))
+                        + " / "
+                        + df.format(Math.toDegrees(helper.getOrientation().toYpr()[2]))
+                        + "\n";
 
         orientationText.setText(oText);
 
@@ -171,7 +197,8 @@ public class OrientationDiagnostics extends Activity {
             o.setAccelerometer(sensorService.getAccValues());
             o.setGyroscope(sensorService.getGyroValues());
             o.setMagnetometer(sensorService.getMagValues());
-            o.setYawPitchRoll(sensorService.getGlassfitQuaternion().toYpr());
+            o.setYawPitchRoll(sensorService.getGyroDroidQuaternion().toYpr());
+            o.setOrientation(sensorService.getGyroDroidQuaternion());
             o.setLinearAcceleration(sensorService.getLinAccValues());
             o.setTimestamp(System.currentTimeMillis());
             orientationCache.add(o);
