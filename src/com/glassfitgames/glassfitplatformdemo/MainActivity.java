@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
+import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
 import com.glassfitgames.glassfitplatform.sensors.Quaternion;
 
@@ -31,12 +32,10 @@ public class MainActivity extends Activity {
     static final int API_ACCESS_TOKEN_REQUEST_ID = 0;
     
     private Button testAuthenticationButton;
-
     private Button testGpsButton;
-    
     private Button testSensorButton;
-    
     private Button trackpadDiagnosticsButton;
+    private Button testSyncButton;
     
     private TextView mainTextView;
 
@@ -53,6 +52,7 @@ public class MainActivity extends Activity {
         testGpsButton = (Button)findViewById(R.id.testGpsButton);
         testSensorButton = (Button)findViewById(R.id.testSensorButton);
         trackpadDiagnosticsButton = (Button)findViewById(R.id.trackpadDiagnosticsButton);
+        testSyncButton = (Button)findViewById(R.id.testSyncButton);
         mainTextView = (TextView)findViewById(R.id.mainTextView);
 
         testAuthenticationButton.setOnClickListener(new OnClickListener() {
@@ -84,6 +84,13 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), TrackpadDiagnostics.class);
                 startActivity(intent);
+            }
+        });
+        
+        testSyncButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Helper.syncToServer(getApplicationContext());
             }
         });
         

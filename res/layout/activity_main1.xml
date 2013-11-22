@@ -39,14 +39,22 @@
         android:layout_below="@+id/testSensorButton"
         android:layout_toRightOf="@+id/testGpsButton"
         android:text="Test Authentication" />
+    
+    <Button
+        android:id="@+id/testSyncButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/trackpadDiagnosticsButton"
+        android:layout_alignParentLeft="true"
+        android:text="Test Sync" />
 
     <TextView
         android:id="@+id/mainTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/trackpadDiagnosticsButton"
+        android:layout_below="@+id/testAuthenticationButton"
+        android:layout_toRightOf="@+id/testSyncButton"
         android:text="MainTextView" />
 
 </RelativeLayout>
