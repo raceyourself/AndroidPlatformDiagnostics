@@ -33,7 +33,6 @@ import android.widget.TextView;
 import com.glassfitgames.glassfitplatform.gpstracker.GPSTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
-import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker.TargetSpeed;
 import com.glassfitgames.glassfitplatform.models.Orientation;
 import com.glassfitgames.glassfitplatform.models.Track;
 import com.glassfitgames.glassfitplatform.points.PointsHelper;
@@ -121,8 +120,7 @@ public class GpsTestActivity extends Activity {
                 } catch (Exception e) {
                     testLocationText.setText("Couldn't instatiate GPS tracker");
                 }
-                targetTracker = helper.getTargetTracker();
-                targetTracker.setSpeed(TargetSpeed.JOGGING);
+                targetTracker = helper.getFauxTargetTracker(3.0f);
                 
                 // start polling for data
                 timer = new Timer();
@@ -140,7 +138,7 @@ public class GpsTestActivity extends Activity {
                     return;
                 }
                 gpsTracker.setIndoorMode(!gpsTracker.isIndoorMode());
-                gpsTracker.setIndoorSpeed(TargetSpeed.WALKING);
+                gpsTracker.setIndoorSpeed(2.0f);
             }
         });
 

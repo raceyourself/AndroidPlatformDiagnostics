@@ -17,8 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
+import com.glassfitgames.glassfitplatform.models.Game;
+import com.glassfitgames.glassfitplatform.models.Position;
+import com.glassfitgames.glassfitplatform.models.Track;
+import com.glassfitgames.glassfitplatform.models.Transaction;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
 import com.glassfitgames.glassfitplatform.sensors.Quaternion;
+import com.roscopeco.ormdroid.Entity;
+import com.roscopeco.ormdroid.ORMDroidApplication;
 
 /**
  * Default activity for the Platform Demo.
@@ -101,7 +107,14 @@ public class MainActivity extends Activity {
             default: deviceText += "Orientation: unknown!\n"; break;
         }
         
+        ORMDroidApplication.initialize(getApplicationContext());
+        //deviceText += "Tracks on device: " + Entity.query(Track.class).count("*").executeAggregate() + "\n";
+        //deviceText += "Positions on device: " + Entity.query(Position.class).count("*").executeAggregate() + "\n";
+        //deviceText += "Transactions on device: " + Entity.query(Transaction.class).count("*").executeAggregate() + "\n";
+        
         mainTextView.setText(deviceText);
+        
+        Game.getGames(getApplicationContext());
 
     }
 
