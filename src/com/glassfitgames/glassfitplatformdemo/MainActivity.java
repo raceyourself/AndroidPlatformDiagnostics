@@ -18,12 +18,7 @@ import android.widget.Toast;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.models.Game;
-import com.glassfitgames.glassfitplatform.models.Position;
-import com.glassfitgames.glassfitplatform.models.Track;
-import com.glassfitgames.glassfitplatform.models.Transaction;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
-import com.glassfitgames.glassfitplatform.sensors.Quaternion;
-import com.roscopeco.ormdroid.Entity;
 import com.roscopeco.ormdroid.ORMDroidApplication;
 
 /**
