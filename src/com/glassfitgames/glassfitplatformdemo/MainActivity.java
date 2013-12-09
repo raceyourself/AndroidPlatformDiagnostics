@@ -1,6 +1,8 @@
 
 package com.glassfitgames.glassfitplatformdemo;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +20,13 @@ import android.widget.Toast;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.models.Game;
+import com.glassfitgames.glassfitplatform.models.Position;
+import com.glassfitgames.glassfitplatform.models.Track;
+import com.glassfitgames.glassfitplatform.models.Transaction;
+import com.glassfitgames.glassfitplatform.models.Transaction.InsufficientFundsException;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
+import com.glassfitgames.glassfitplatform.points.PointsHelper;
+import com.roscopeco.ormdroid.Entity;
 import com.roscopeco.ormdroid.ORMDroidApplication;
 
 /**
@@ -88,6 +96,13 @@ public class MainActivity extends Activity {
             }
         });
         
+    }
+    
+    @Override
+    public void onResume() {    
+        
+        super.onResume();
+        
         String deviceText = "";
         deviceText += "Manufacturer: " + android.os.Build.MANUFACTURER + "\n";
         deviceText += "Product: " + android.os.Build.PRODUCT + "\n";
@@ -102,14 +117,37 @@ public class MainActivity extends Activity {
             default: deviceText += "Orientation: unknown!\n"; break;
         }
         
+        // test database
         ORMDroidApplication.initialize(getApplicationContext());
-        //deviceText += "Tracks on device: " + Entity.query(Track.class).count("*").executeAggregate() + "\n";
-        //deviceText += "Positions on device: " + Entity.query(Position.class).count("*").executeAggregate() + "\n";
-        //deviceText += "Transactions on device: " + Entity.query(Transaction.class).count("*").executeAggregate() + "\n";
+        deviceText += "Tracks on device: " + Entity.query(Track.class).executeMulti().size() + "\n";
+        deviceText += "Positions on device: " + Entity.query(Position.class).executeMulti().size() + "\n";
+        deviceText += "Transactions on device: " + Entity.query(Transaction.class).executeMulti().size() + "\n";
         
+        // test game loading
+        List<Game> games = Game.getGames(getApplicationContext());
+        deviceText += "Games loaded: " + games.size() + "\n";
+        
+        // test points system:
+        PointsHelper p = PointsHelper.getInstance(getApplicationContext());
+        try {
+            Log.i("PlatformDemo.MainActivity", "Trying to award points, gems and metabolism..");
+            p.awardPoints("test", "hard-coded", "PlatformDemo.MainActivity", 0);
+            p.awardGems("test", "hard-coded", "PlatformDemo.MainActivity", 0);
+            p.awardMetabolism("test", "hard-coded", "PlatformDemo.MainActivity", 0.0f);
+            Log.i("PlatformDemo.MainActivity", "..funds awarded successfully.");
+        } catch (InsufficientFundsException e) {
+            Log.e("PlatformDemo.MainActivity", "InsufficientFunds");
+        }
+        
+        Log.i("PlatformDemo.MainActivity", "Opening points: " + p.getOpeningPointsBalance());
+        Log.i("PlatformDemo.MainActivity", "Current-game points: " + p.getCurrentActivityPoints());
+        Log.i("PlatformDemo.MainActivity", "Total gems: " + p.getCurrentGemBalance());
+        Log.i("PlatformDemo.MainActivity", "Current metabolism: " + p.getCurrentMetabolism());
+        
+        deviceText += "Points: " + (p.getOpeningPointsBalance() + p.getCurrentActivityPoints()) + "\n";
+        deviceText += "Gems: " + p.getCurrentGemBalance() + "\n";
+        deviceText += "Metabolism: " + p.getCurrentMetabolism() + "\n";
         mainTextView.setText(deviceText);
-        
-        Game.getGames(getApplicationContext());
 
     }
 
