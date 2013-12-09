@@ -67,7 +67,7 @@ public class GpsTestActivity extends Activity {
     private Button resetButton;
     private Button syncButton;
     
-    private Timer timer;
+    private Timer timer = new Timer();
     private GpsTask task;
     
     BufferedWriter out;
@@ -123,7 +123,7 @@ public class GpsTestActivity extends Activity {
                 targetTracker = helper.getFauxTargetTracker(3.0f);
                 
                 // start polling for data
-                timer = new Timer();
+                if (task != null) task.cancel();
                 task = new GpsTask();
                 timer.scheduleAtFixedRate(task, 1000, 50); 
                 
@@ -219,7 +219,7 @@ public class GpsTestActivity extends Activity {
                     e.printStackTrace();
                 } catch (NullPointerException e) {
                     // out might be null if we've not started tracking
-                    e.printStackTrace();
+                    // no need to worry about closing it
                 }
             }
         });
@@ -255,6 +255,14 @@ public class GpsTestActivity extends Activity {
 
     }
     
+    @Override
+    public void onContentChanged() {
+        Log.e("GPSTestActivity", "Content changed");
+        super.onContentChanged();
+        View view = this.findViewById(android.R.id.content);
+        view.setKeepScreenOn(true);
+    }
+    
     public void onDestroy() {
         
         super.onDestroy();
@@ -275,7 +283,7 @@ public class GpsTestActivity extends Activity {
     public void onPause() {
         
         super.onPause();
-        //gpsTracker.onPause();
+        //gpsTracker.onPause();  // don't want to stop tracking when the screen turns off
         
         if (out != null) {
             try {
@@ -283,7 +291,7 @@ public class GpsTestActivity extends Activity {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 // Probably out is already closed. Can't check for that, but should ignore the error
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
