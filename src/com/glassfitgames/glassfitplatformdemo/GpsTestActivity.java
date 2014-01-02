@@ -34,6 +34,7 @@ import com.glassfitgames.glassfitplatform.gpstracker.GPSTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.TargetTracker;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.models.Orientation;
+import com.glassfitgames.glassfitplatform.models.Position;
 import com.glassfitgames.glassfitplatform.models.Track;
 import com.glassfitgames.glassfitplatform.points.PointsHelper;
 import com.glassfitgames.glassfitplatform.utils.FileUtils;
@@ -86,27 +87,6 @@ public class GpsTestActivity extends Activity {
         stopTrackingButton = (Button)findViewById(R.id.stopTrackingButton);
         resetButton = (Button)findViewById(R.id.resetButton);
         syncButton = (Button)findViewById(R.id.SyncButton);
-        
-        // try to activate GPS
-        String o = "Can toggle GPS: ";
-        if (canToggleGPS()) {
-            o += "yes\n";
-        } else {
-            o += "no\n";
-        }
-        testLocationText.setText(o);
-        
-        try {
-            o+= "Attempting to switch on... ";
-            testLocationText.setText(o);
-            turnGPSOn();
-            o+= "Success!\n";
-            testLocationText.setText(o);
-        } catch (Exception e) {
-            o+= "Failure!\n";
-            testLocationText.setText(o);
-            e.printStackTrace();
-        }
 
         initGpsButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -120,7 +100,7 @@ public class GpsTestActivity extends Activity {
                 } catch (Exception e) {
                     testLocationText.setText("Couldn't instatiate GPS tracker");
                 }
-                targetTracker = helper.getFauxTargetTracker(3.0f);
+                targetTracker = helper.getFauxTargetTracker(1.8f);
                 
                 // start polling for data
                 if (task != null) task.cancel();
@@ -138,7 +118,6 @@ public class GpsTestActivity extends Activity {
                     return;
                 }
                 gpsTracker.setIndoorMode(!gpsTracker.isIndoorMode());
-                gpsTracker.setIndoorSpeed(2.0f);
             }
         });
 
@@ -165,10 +144,10 @@ public class GpsTestActivity extends Activity {
                 try {
                     SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HHmmss");
                     String datestamp = sdfDate.format(new Date());
-                    File file = new File(getExternalFilesDir(null), "AccelerationData_" + datestamp + ".csv");
+                    File file = new File(getExternalFilesDir(null), "PositionData_" + datestamp + ".csv");
                     file.getParentFile().mkdirs();
                     if (!file.exists()) file.createNewFile();
-                    Log.i("GpsTestActivity","Writing acceleration data to " + file.getAbsolutePath());
+                    Log.i("GpsTestActivity","Writing position data to " + file.getAbsolutePath());
                     
                     FileWriter fstream = new FileWriter(file);
                     out = new BufferedWriter(fstream);
@@ -180,21 +159,23 @@ public class GpsTestActivity extends Activity {
 //                    out.write("Real-world AccX, ");
 //                    out.write("Real-world AccY, ");
 //                    out.write("Real-world AccZ, ");
-                    out.write("Forward Acceleration, ");
-                    out.write("Total Acceleration, ");
-                    out.write("Mean dFa, ");
+//                    out.write("Forward Acceleration, ");
+//                    out.write("Total Acceleration, ");
+//                    out.write("Mean dFa, ");
                     out.write("Mean dTa, ");
-                    out.write("SD Ta, ");
-                    out.write("Max dTa, ");
-//                    out.write("Device Yaw, ");
-//                    out.write("GPS Bearing, ");
+//                    out.write("SD Ta, ");
+//                    out.write("Max dTa, ");
+                    out.write("Device Yaw, ");
+                    out.write("GPS Bearing, ");
+                    out.write("Bearing to Avatar, ");
                     out.write("GPS Speed, ");
                     out.write("Smoothed Speed, ");
                     out.write("GPS Distance, ");
-                    out.write("Extrapolated GPS Distance, ");
-                    out.write("Smoothed Distance\n");
+                    out.write("Smoothed Distance, ");
+                    out.write("GPS lat, ");
+                    out.write("GPS lng, ");
+                    out.write("GPS bearing\n");
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 
@@ -215,7 +196,7 @@ public class GpsTestActivity extends Activity {
                 try {
                     out.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
+                    // If we've not yet opened the output stream, this is not an issue
                     e.printStackTrace();
                 } catch (NullPointerException e) {
                     // out might be null if we've not started tracking
@@ -232,24 +213,14 @@ public class GpsTestActivity extends Activity {
                     return;
                 }
                 
-                gpsTracker.reset();
+                gpsTracker.startNewTrack();
             }
         });
         
         syncButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Helper.syncToServer(getApplicationContext());
-                ORMDroidApplication.initialize(context);
-                File f;
-                try {
-                    f = FileUtils.createSdCardFile(getApplicationContext(), "AllTracks.csv");
-                    (new Track()).allToCsv(f);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                
+                Helper.getInstance(context).exportDatabaseToCsv();
             }
         });
 
@@ -274,7 +245,7 @@ public class GpsTestActivity extends Activity {
             try {
                 out.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                // If we've not opened the output stream yet, this is not a problem
                 e.printStackTrace();
             }
         }
@@ -289,7 +260,6 @@ public class GpsTestActivity extends Activity {
             try {
                 out.flush();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 // Probably out is already closed. Can't check for that, but should ignore the error
                 //e.printStackTrace();
             }
@@ -321,26 +291,29 @@ public class GpsTestActivity extends Activity {
             return;
         }
 
-        DecimalFormat zeroDp = new DecimalFormat("#");
+        DecimalFormat zeroDp = new DecimalFormat("###");
         DecimalFormat twoDp = new DecimalFormat("+#.##;-#.##");
-        double gpsDistance = gpsTracker.getGpsDistance();
-        double cumulativeDistance = gpsTracker.getElapsedDistance();
-        long gpsTime = gpsTracker.getElapsedTime();
-        double targetDistance = targetTracker.getCumulativeDistanceAtTime(gpsTime);
-        String bearing = gpsTracker.hasBearing() ? zeroDp.format(gpsTracker.getCurrentBearing()) + " degrees" : "unknown, please move in a straight line";
-
+        
         String text = 
-                  "Target elapsed distance = " + twoDp.format(targetDistance) + "m.\n"
-                + "Device state: " + gpsTracker.getState().toString() + "\n"
-                  
-                + "GPS distance = " + twoDp.format(gpsTracker.getGpsDistance()) + "m (\u00b1" + zeroDp.format(gpsTracker.getCurrentPosition().getEpe()) + "m.)\n"
+                
+                  "Device state: " + gpsTracker.getState().toString() + "\n"                  
+                + "GPS distance = " + twoDp.format(gpsTracker.getGpsDistance()) + "m (\u00b1" 
+                          + zeroDp.format(gpsTracker.getCurrentPosition().getEpe()) + "m.)\n"
                 + "Display distance = " + twoDp.format(gpsTracker.getElapsedDistance()) + "m.\n"
-                + "Distance to avatar = " + twoDp.format(targetDistance - gpsDistance) + "m.\n\n"
-                + "Avatar current speed = " + twoDp.format(targetTracker.getCurrentSpeed(gpsTracker.getElapsedTime())) + "m/s.\n"
+//                +"Target elapsed distance = " + twoDp.format(targetDistance) + "m.\n"
+                + "Distance to avatar = " + twoDp.format(targetTracker.getCumulativeDistanceAtTime(gpsTracker.getElapsedTime()) 
+                                                       - gpsTracker.getElapsedDistance()) + "m.\n"
+
+                + "Device Yaw = " + zeroDp.format(-gpsTracker.getYaw() % 360) + " degrees\n\n"
+                + "GPS bearing = " + zeroDp.format(lastBearing) + " degrees\n\n"
+                + "Relative bearing to avatar = " + zeroDp.format(getBearingToAvatar()) + " degrees\n\n"
+
+                + "Display speed = " + twoDp.format(gpsTracker.getCurrentSpeed()) + "m/s.\n"
                 + "GPS speed = " + twoDp.format(gpsTracker.getGpsSpeed()) + "m/s.\n"
-                + "Display speed = " + twoDp.format(gpsTracker.getCurrentSpeed()) + "m/s.\n\n"   
-                + "Smoothed bearing to target = " + bearing + ".\n\n"
-                + "GPS elapsed time = " + twoDp.format((double)gpsTracker.getElapsedTime()/1000.0) + "s.\n\n"
+                + "Avatar current speed = " + twoDp.format(targetTracker.getCurrentSpeed(gpsTracker.getElapsedTime())) + "m/s.\n\n"
+                
+                
+                + "GPS elapsed time = " + twoDp.format((double)gpsTracker.getElapsedTime()/1000.0) + "s.\n"
                 + "Points scored during current activity = " + pointsHelper.getCurrentActivityPoints() + "\n\n"
                 
 //                + "Device acceleration X = " + twoDp.format((double)gpsTracker.getDeviceAcceleration()[0]) + "ms-2.\n"
@@ -415,6 +388,25 @@ public class GpsTestActivity extends Activity {
         testLocationText.setText(text);
     }
     
+    /**
+     * Calculates the relative bearing from the user's yaw to the smoothed GPS
+     * bearing. The avatar is placed on the smoothed GOS bearing, so this number
+     * can be interpreted as: + means avatar to the right, minus is avatar to the
+     * left.
+     */
+    private float lastBearing = -999.0f;
+    private float getBearingToAvatar() {
+        float yaw = -gpsTracker.getYaw() % 360;
+        if (lastBearing == -999.0f) lastBearing = yaw;
+        float newBearing = gpsTracker.getCurrentBearing();
+        if (newBearing != -999.0f) {
+            lastBearing = newBearing;
+            return (newBearing - yaw + 180) % 360 - 180;
+        } else {
+            return (lastBearing - yaw + 180) % 360 - 180;
+        }
+    }
+    
     private class GpsTask extends TimerTask {
         public void run() {
             runOnUiThread(new Runnable() {
@@ -427,11 +419,11 @@ public class GpsTestActivity extends Activity {
 //                        gpsTracker.tick.run();
 //                    }
 
-//                    if (out != null && gpsTracker != null && gpsTracker.isTracking()) {
-//                        // write values to file
-//                        try {
-//                            out.write((float)gpsTracker.getElapsedTime()/1000.0f + ", ");
-//                            out.write(gpsTracker.getState() + ", ");
+                    if (out != null && gpsTracker != null && gpsTracker.isTracking()) {
+                        // write values to file
+                        try {
+                            out.write((float)gpsTracker.getElapsedTime()/1000.0f + ", ");
+                            out.write(gpsTracker.getState() + ", ");
                             
 //                            out.write(gpsTracker.getDeviceAcceleration()[0] + ", ");
 //                            out.write(gpsTracker.getDeviceAcceleration()[1] + ", ");
@@ -439,80 +431,33 @@ public class GpsTestActivity extends Activity {
 //                            out.write(gpsTracker.getRealWorldAcceleration()[0] + ", ");
 //                            out.write(gpsTracker.getRealWorldAcceleration()[1] + ", ");
 //                            out.write(gpsTracker.getRealWorldAcceleration()[2] + ", ");
-//                            
 //                            out.write(gpsTracker.getForwardAcceleration() + ", ");
-//                            out.write(gpsTracker.getTotalAcceleration() + ", ");
-//                            
+//                            out.write(gpsTracker.getTotalAcceleration() + ", ");                         
 //                            out.write(gpsTracker.getMeanDfa() + ", ");
-//                            out.write(gpsTracker.getMeanDta() + ", ");
+                            out.write(gpsTracker.getMeanDta() + ", ");
 //                            out.write(gpsTracker.getSdTotalAcc() + ", ");
 //                            out.write(gpsTracker.getMaxDta() + ", ");
-////                            out.write(gpsTracker.getYaw() + ", ");
-////                            out.write(gpsTracker.getCurrentBearing() + ", ");
-//                            out.write(gpsTracker.getGpsSpeed() + ", ");
-//                            out.write(gpsTracker.getCurrentSpeed() + ", ");
-//                            out.write(gpsTracker.getGpsDistance() + ", ");
-//                            out.write(gpsTracker.getExtrapolatedGpsDistance() + ", ");
-//                            out.write(gpsTracker.getElapsedDistance() + "\n");
-//                        } catch (IOException e) {
-//                            // TODO Auto-generated catch block
-//                            e.printStackTrace();
-//                        }
-//                    }
+                            
+                            out.write(-gpsTracker.getYaw() % 360 + ", ");
+                            out.write(gpsTracker.getCurrentBearing() + ", ");
+                            out.write(getBearingToAvatar() + ", ");
+                            out.write(gpsTracker.getGpsSpeed() + ", ");
+                            out.write(gpsTracker.getCurrentSpeed() + ", ");
+                            out.write(gpsTracker.getGpsDistance() + ", ");
+                            out.write(gpsTracker.getElapsedDistance() + ", ");
+                            out.write(gpsTracker.getCurrentPosition().getLatx() + ", ");
+                            out.write(gpsTracker.getCurrentPosition().getLatx() + ", ");
+                            out.write(gpsTracker.getCurrentPosition().getBearing() + "\n");
+                            
+                        } catch (IOException e) {
+                            // Problem writing to the file!
+                            e.printStackTrace();
+                        }
+                    }
+                                        
                 }
             });
         }
-    }
-    
-    private void turnGPSOn(){
-        
-        Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
-        intent.putExtra("enabled", true);
-        sendBroadcast(intent);
-        
-        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if(!provider.contains("gps")){ //if gps is disabled
-            final Intent poke = new Intent();
-            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider"); 
-            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-            poke.setData(Uri.parse("3")); 
-            sendBroadcast(poke);
-        }
-    }
-
-    private void turnGPSOff(){
-        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-
-        if(provider.contains("gps")){ //if gps is enabled
-            final Intent poke = new Intent();
-            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
-            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-            poke.setData(Uri.parse("3")); 
-            sendBroadcast(poke);
-        }
-    }
-    //use the following to test if the existing version of the power control widget is one which will allow you to toggle the gps.
-
-    private boolean canToggleGPS() {
-        PackageManager pacman = getPackageManager();
-        PackageInfo pacInfo = null;
-
-        try {
-            pacInfo = pacman.getPackageInfo("com.android.settings", PackageManager.GET_RECEIVERS);
-        } catch (NameNotFoundException e) {
-            return false; //package not found
-        }
-
-        if(pacInfo != null){
-            for(ActivityInfo actInfo : pacInfo.receivers){
-                //test if recevier is exported. if so, we can toggle GPS.
-                if(actInfo.name.equals("com.android.settings.widget.SettingsAppWidgetProvider") && actInfo.exported){
-                    return true;
-                }
-            }
-        }
-
-        return false; //default
     }
 
 }

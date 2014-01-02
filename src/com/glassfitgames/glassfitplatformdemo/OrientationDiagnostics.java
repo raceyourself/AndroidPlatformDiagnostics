@@ -91,7 +91,7 @@ public class OrientationDiagnostics extends Activity {
                 FileWriter fstream = new FileWriter(f);
                 BufferedWriter out = new BufferedWriter(fstream);
                 out.append((new Orientation()).headersToCsv() + "\n");
-                SQLiteDatabase db = ORMDroidApplication.getDefaultDatabase();
+                SQLiteDatabase db = ORMDroidApplication.getInstance().getDatabase();
                 for (Orientation o : orientationCache) {
                     out.append(o.toCsv(db) + "\n");
                 }

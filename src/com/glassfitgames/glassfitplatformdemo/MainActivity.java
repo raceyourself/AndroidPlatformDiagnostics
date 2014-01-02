@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
+import com.glassfitgames.glassfitplatform.gpstracker.Helper;
+import com.glassfitgames.glassfitplatform.gpstracker.SyncHelper;
 import com.glassfitgames.glassfitplatform.models.Game;
 import com.glassfitgames.glassfitplatform.models.Position;
 import com.glassfitgames.glassfitplatform.models.Track;
@@ -40,12 +43,10 @@ public class MainActivity extends Activity {
     static final int API_ACCESS_TOKEN_REQUEST_ID = 0;
     
     private Button testAuthenticationButton;
-
     private Button testGpsButton;
-    
     private Button testSensorButton;
-    
     private Button trackpadDiagnosticsButton;
+    private Button testSyncButton;
     
     private TextView mainTextView;
 
@@ -62,6 +63,7 @@ public class MainActivity extends Activity {
         testGpsButton = (Button)findViewById(R.id.testGpsButton);
         testSensorButton = (Button)findViewById(R.id.testSensorButton);
         trackpadDiagnosticsButton = (Button)findViewById(R.id.trackpadDiagnosticsButton);
+        testSyncButton = (Button)findViewById(R.id.testSyncButton);
         mainTextView = (TextView)findViewById(R.id.mainTextView);
 
         testAuthenticationButton.setOnClickListener(new OnClickListener() {
@@ -75,7 +77,7 @@ public class MainActivity extends Activity {
         testGpsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), GpsTestActivity.class);
+                Intent intent = new Intent(MainActivity.this, GpsTestActivity.class);
                 startActivity(intent);
             }
         });
@@ -93,6 +95,13 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), TrackpadDiagnostics.class);
                 startActivity(intent);
+            }
+        });
+        
+        testSyncButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Helper.syncToServer(MainActivity.this);
             }
         });
         
@@ -119,34 +128,45 @@ public class MainActivity extends Activity {
         
         // test database
         ORMDroidApplication.initialize(getApplicationContext());
-        deviceText += "Tracks on device: " + Entity.query(Track.class).executeMulti().size() + "\n";
-        deviceText += "Positions on device: " + Entity.query(Position.class).executeMulti().size() + "\n";
-        deviceText += "Transactions on device: " + Entity.query(Transaction.class).executeMulti().size() + "\n";
+//        deviceText += "Tracks on device: " + Entity.query(Track.class).executeMulti().size() + "\n";
+//        deviceText += "Positions on device: " + Entity.query(Position.class).executeMulti().size() + "\n";
+//        deviceText += "Transactions on device: " + Entity.query(Transaction.class).executeMulti().size() + "\n";
         
+        // try 10 concurrent writes to check database locking
+//        final Track t = new Track(1, "thread-test");
+//        t.save();
+//        for (int i=0; i<100; i++) {
+//            new Thread() {
+//                public void run() {
+//                    (new Position(t, new Location(""))).save();
+//                }
+//            }.run();
+//        }
+//        
         // test game loading
-        List<Game> games = Game.getGames(getApplicationContext());
-        deviceText += "Games loaded: " + games.size() + "\n";
+        //List<Game> games = Game.getGames(getApplicationContext());
+        //deviceText += "Games loaded: " + games.size() + "\n";
         
         // test points system:
-        PointsHelper p = PointsHelper.getInstance(getApplicationContext());
-        try {
-            Log.i("PlatformDemo.MainActivity", "Trying to award points, gems and metabolism..");
-            p.awardPoints("test", "hard-coded", "PlatformDemo.MainActivity", 0);
-            p.awardGems("test", "hard-coded", "PlatformDemo.MainActivity", 0);
-            p.awardMetabolism("test", "hard-coded", "PlatformDemo.MainActivity", 0.0f);
-            Log.i("PlatformDemo.MainActivity", "..funds awarded successfully.");
-        } catch (InsufficientFundsException e) {
-            Log.e("PlatformDemo.MainActivity", "InsufficientFunds");
-        }
+//        PointsHelper p = PointsHelper.getInstance(getApplicationContext());
+//        try {
+//            Log.i("PlatformDemo.MainActivity", "Trying to award points, gems and metabolism..");
+//            p.awardPoints("test", "hard-coded", "PlatformDemo.MainActivity", 0);
+//            p.awardGems("test", "hard-coded", "PlatformDemo.MainActivity", 0);
+//            p.awardMetabolism("test", "hard-coded", "PlatformDemo.MainActivity", 0.0f);
+//            Log.i("PlatformDemo.MainActivity", "..funds awarded successfully.");
+//        } catch (InsufficientFundsException e) {
+//            Log.e("PlatformDemo.MainActivity", "InsufficientFunds");
+//        }
         
-        Log.i("PlatformDemo.MainActivity", "Opening points: " + p.getOpeningPointsBalance());
-        Log.i("PlatformDemo.MainActivity", "Current-game points: " + p.getCurrentActivityPoints());
-        Log.i("PlatformDemo.MainActivity", "Total gems: " + p.getCurrentGemBalance());
-        Log.i("PlatformDemo.MainActivity", "Current metabolism: " + p.getCurrentMetabolism());
-        
-        deviceText += "Points: " + (p.getOpeningPointsBalance() + p.getCurrentActivityPoints()) + "\n";
-        deviceText += "Gems: " + p.getCurrentGemBalance() + "\n";
-        deviceText += "Metabolism: " + p.getCurrentMetabolism() + "\n";
+//        Log.i("PlatformDemo.MainActivity", "Opening points: " + p.getOpeningPointsBalance());
+//        Log.i("PlatformDemo.MainActivity", "Current-game points: " + p.getCurrentActivityPoints());
+//        Log.i("PlatformDemo.MainActivity", "Total gems: " + p.getCurrentGemBalance());
+//        Log.i("PlatformDemo.MainActivity", "Current metabolism: " + p.getCurrentMetabolism());
+//        
+//        deviceText += "Points: " + (p.getOpeningPointsBalance() + p.getCurrentActivityPoints()) + "\n";
+//        deviceText += "Gems: " + p.getCurrentGemBalance() + "\n";
+//        deviceText += "Metabolism: " + p.getCurrentMetabolism() + "\n";
         mainTextView.setText(deviceText);
 
     }
