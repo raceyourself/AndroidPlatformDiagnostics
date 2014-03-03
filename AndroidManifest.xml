@@ -8,10 +8,18 @@
         android:minSdkVersion="12"
         android:targetSdkVersion="16" />
 
+    <!-- This line added to enable BLE --> 
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    
+    
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+      <!-- Needs these permissions to work --> 
+     <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    
 
     <application
         android:allowBackup="true"
@@ -28,18 +36,18 @@
             android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
             <intent-filter>
                 <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
             </intent-filter>
+
             <meta-data
                 android:name="com.google.android.glass.VoiceTrigger"
                 android:resource="@xml/voice_trigger" />
-
         </activity>
-        
+
         <!-- sub-activities -->
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.GpsTestActivity"
@@ -48,7 +56,7 @@
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.OrientationDiagnostics"
             android:label="@string/title_activity_orientation_diagnostics" >
-        </activity>        
+        </activity>
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.TrackpadDiagnostics"
             android:label="@string/title_activity_trackpad_diagnostics" >
@@ -57,6 +65,7 @@
             android:name="com.glassfitgames.glassfitplatform.auth.AuthenticationActivity"
             android:label="@string/title_activity_authentication" >
         </activity>
+        
 
         <!-- services -->
         <service
@@ -65,6 +74,14 @@
             android:label="@string/sensor_service_name" >
         </service>
 
-    </application>
+        <activity
+            android:name="com.glassfitgames.glassfitplatformdemo.BLE_activity"
+            android:label="@string/title_activity_ble_activity" >
+        </activity>
+        <!-- BLE sensor services -->
+        <service android:name=".BluetoothLeService_HR" android:enabled="true"/>
+        <service android:name=".BluetoothLeService_SPEEDO" android:enabled="true"/>
+   
+        </application>
 
 </manifest>

@@ -1,0 +1,126 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".BLE_activity" >
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:onClick="ButtonOnClick"
+        android:text="Init HR" />
+
+    <Button
+        android:id="@+id/button_show_HR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button1"
+        android:layout_below="@+id/button1"
+        android:onClick="ButtonOnClick"
+        android:text="Show HR" />
+    
+
+    <Button
+        android:id="@+id/button_show_speedo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_show_HR"
+        android:layout_below="@+id/button_show_HR"
+         android:onClick="ButtonOnClick"
+        android:text="Show Speedo" />
+
+    <Button
+        android:id="@+id/button_HR_read_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_show_speedo"
+        android:layout_below="@+id/button_show_speedo"
+         android:onClick="ButtonOnClick"
+        android:text="Read HR name" />
+
+    <Button
+        android:id="@+id/button_speedo_read_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_HR_read_name"
+        android:layout_below="@+id/button_HR_read_name"
+         android:onClick="ButtonOnClick"
+        android:text="Read speedo name" />
+
+    <Button
+        android:id="@+id/button_init_speedo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_speedo_read_name"
+        android:layout_below="@+id/button_speedo_read_name"
+         android:onClick="ButtonOnClick"
+        android:text="Init speedo" />
+
+    <Button
+        android:id="@+id/button_stop_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button_init_speedo"
+        android:layout_below="@+id/button_init_speedo"
+         android:onClick="ButtonOnClick"
+        android:text="Stop all" />
+
+    <TextView
+        android:id="@+id/textView_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_general"
+        android:layout_below="@+id/textView_general"
+        android:layout_marginTop="22dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView_HR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_log"
+        android:layout_below="@+id/textView_log"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_HR"
+        android:layout_below="@+id/textView_HR"
+        android:layout_marginTop="18dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/textView_speed"
+        android:layout_below="@+id/textView_speed"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView_cadence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView_distance"
+        android:layout_below="@+id/textView_distance"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView_general"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/button1"
+        android:layout_marginLeft="49dp"
+        android:layout_toRightOf="@+id/button_speedo_read_name"
+        android:text="TextView" />
+
+</RelativeLayout>

@@ -4,11 +4,13 @@ package com.glassfitgames.glassfitplatformdemo;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.Surface;
@@ -19,6 +21,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE;
+import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE_Callbacks;
+import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE_HR;
+import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE_SPEEDO;
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.gpstracker.SyncHelper;
@@ -40,6 +46,10 @@ import com.roscopeco.ormdroid.ORMDroidApplication;
  */
 public class MainActivity extends Activity {
 
+	
+	
+    
+    
     static final int API_ACCESS_TOKEN_REQUEST_ID = 0;
     
     private Button testAuthenticationButton;
@@ -47,6 +57,9 @@ public class MainActivity extends Activity {
     private Button testSensorButton;
     private Button trackpadDiagnosticsButton;
     private Button testSyncButton;
+    //BLE buttons
+    private Button testBLE_HR;
+    
     
     private TextView mainTextView;
 
@@ -65,6 +78,8 @@ public class MainActivity extends Activity {
         trackpadDiagnosticsButton = (Button)findViewById(R.id.trackpadDiagnosticsButton);
         testSyncButton = (Button)findViewById(R.id.testSyncButton);
         mainTextView = (TextView)findViewById(R.id.mainTextView);
+        //BLE buttons
+        testBLE_HR=(Button)findViewById(R.id.testBLE_HR_button);
 
         testAuthenticationButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -104,6 +119,17 @@ public class MainActivity extends Activity {
                 Helper.syncToServer(MainActivity.this);
             }
         });
+        
+        
+        testBLE_HR.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+			
+			Intent intent=new Intent(getApplicationContext(),BLE_activity.class);
+			startActivity(intent);
+			}
+		});
         
     }
     
@@ -216,8 +242,25 @@ public class MainActivity extends Activity {
             } 
             break; 
           } 
+         //If the user has just agreed to enable Bluetooth
+          case (GlassFit_BLE.REQUEST_ENABLE_BT):
+          {
+            if (resultCode==Activity.RESULT_OK) //check that the result is actually ok
+            {
+            	  //Start scanning for devices
+                //ble_HR_monitor.ScanForBLEDevices(true);
+                //text_log.append("Started scanning for HR BLE devices\n\r");
+            }
+        	
+            	
+//
+          }
         } 
       }
     
+
+    
+    
+
 
 }

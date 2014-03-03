@@ -8,8 +8,8 @@
     <string name="title_orientation_helper">Orientation Demo</string>
     <string name="title_activity_trackpad_diagnostics">TrackpadDiagnostics</string>
     <string name="title_activity_orientation_diagnostics">OrientationDiagnostics</string>
-    
     <string name="glass_voice_trigger">where are the zombies</string>
     <string name="glass_voice_prompt">looks like they\'re behind you!</string>
+    <string name="title_activity_ble_activity">BLE_activity</string>
 
 </resources>

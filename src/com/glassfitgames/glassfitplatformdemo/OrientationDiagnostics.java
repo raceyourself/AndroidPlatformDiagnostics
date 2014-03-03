@@ -90,13 +90,13 @@ public class OrientationDiagnostics extends Activity {
                 File f = FileUtils.createSdCardFile(this.getApplicationContext(), "OrientationData_" + datestamp + ".csv");
                 FileWriter fstream = new FileWriter(f);
                 BufferedWriter out = new BufferedWriter(fstream);
-                out.append((new Orientation()).headersToCsv() + "\n");
-                SQLiteDatabase db = ORMDroidApplication.getInstance().getDatabase();
-                for (Orientation o : orientationCache) {
-                    out.append(o.toCsv(db) + "\n");
-                }
-                db.close();
-                out.close();
+//                out.append((new Orientation()).headersToCsv() + "\n");
+//                SQLiteDatabase db = ORMDroidApplication.getInstance().getDatabase();
+//                for (Orientation o : orientationCache) {
+//                    out.append(o.toCsv(db) + "\n");
+//                }
+//                db.close();
+//                out.close();
                 orientationText.setText("Writing to CSV complete!");
             } catch (IOException e) {
                 orientationText.setText("Writing to CSV failed!");
