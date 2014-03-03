@@ -12,9 +12,8 @@
         android:id="@+id/testGpsButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:text="GPS Diagnostics" />
-
+    
     <Button
         android:id="@+id/testSensorButton"
         android:layout_width="match_parent"
@@ -38,23 +37,33 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/testSensorButton"
         android:layout_toRightOf="@+id/testGpsButton"
-        android:text="Test Authentication" />
-    
+        android:text="Test Database" />
+
     <Button
         android:id="@+id/testSyncButton"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/trackpadDiagnosticsButton"
         android:layout_below="@+id/trackpadDiagnosticsButton"
-        android:layout_alignParentLeft="true"
         android:text="Test Sync" />
 
+    <Button
+        android:id="@+id/lifeFitnessDiagnosticsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/testSyncButton"
+        android:layout_alignLeft="@+id/testAuthenticationButton"
+        android:layout_alignRight="@+id/testAuthenticationButton"
+        android:text="LifeFitness Diagnostics" />
+    
     <TextView
         android:id="@+id/mainTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/testAuthenticationButton"
-        android:layout_toRightOf="@+id/testSyncButton"
+        android:layout_alignLeft="@+id/testSyncButton"
+        android:layout_below="@+id/testSyncButton"
         android:text="MainTextView" />
+
+    
 
 </RelativeLayout>

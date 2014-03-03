@@ -5,9 +5,12 @@
     <string name="title_activity_main">GlassFit Platform Demo</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    
     <string name="title_orientation_helper">Orientation Demo</string>
     <string name="title_activity_trackpad_diagnostics">TrackpadDiagnostics</string>
     <string name="title_activity_orientation_diagnostics">OrientationDiagnostics</string>
+    <string name="title_activity_life_fitness_diagnostics">Life Fitness Diagnostics</string>
+    <string name="title_gesture_helper">TrackpadDiagnostics</string>
     
     <string name="glass_voice_trigger">where are the zombies</string>
     <string name="glass_voice_prompt">looks like they\'re behind you!</string>

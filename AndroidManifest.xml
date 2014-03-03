@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
     <application
         android:allowBackup="true"
@@ -22,24 +24,35 @@
             android:name="ormdroid.database.name"
             android:value="glassfit_platform_database" />
 
+        <!-- libraries -->
+        <uses-library android:name="com.android.future.usb.accessory" />
+
         <!-- main activity -->
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.MainActivity"
             android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
             <intent-filter>
                 <action android:name="com.google.android.glass.action.VOICE_TRIGGER" />
             </intent-filter>
+            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+
             <meta-data
                 android:name="com.google.android.glass.VoiceTrigger"
                 android:resource="@xml/voice_trigger" />
-
         </activity>
-        
+
         <!-- sub-activities -->
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.GpsTestActivity"
@@ -48,7 +61,7 @@
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.OrientationDiagnostics"
             android:label="@string/title_activity_orientation_diagnostics" >
-        </activity>        
+        </activity>
         <activity
             android:name="com.glassfitgames.glassfitplatformdemo.TrackpadDiagnostics"
             android:label="@string/title_activity_trackpad_diagnostics" >
@@ -57,6 +70,24 @@
             android:name="com.glassfitgames.glassfitplatform.auth.AuthenticationActivity"
             android:label="@string/title_activity_authentication" >
         </activity>
+        <activity
+            android:name="com.glassfitgames.glassfitplatform.sensors.GestureHelper"
+            android:label="@string/title_gesture_helper" >
+        </activity>
+        <activity
+            android:name="com.glassfitgames.glassfitplatformdemo.LifeFitnessDiagnostics"
+            android:label="@string/title_activity_life_fitness_diagnostics" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
+                android:resource="@xml/accessory_data" />
+        </activity>
 
         <!-- services -->
         <service
@@ -64,6 +95,10 @@
             android:icon="@drawable/ic_launcher"
             android:label="@string/sensor_service_name" >
         </service>
+        <service android:name="com.lf.api.EquipmentManager" />
+        <service
+            android:name="com.lf.api.controller.usb.DeviceConnector"
+            android:label="Device Connection" />
 
     </application>
 

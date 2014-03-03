@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.models.Orientation;
 import com.glassfitgames.glassfitplatform.sensors.SensorService;
+import com.glassfitgames.glassfitplatform.sensors.SensoriaSock;
 import com.glassfitgames.glassfitplatform.utils.FileUtils;
 import com.roscopeco.ormdroid.Entity;
 import com.roscopeco.ormdroid.ORMDroidApplication;
@@ -40,6 +41,7 @@ public class OrientationDiagnostics extends Activity {
     private final boolean CLEAR_DATABASE_ON_START = false;    
     
     private SensorService sensorService;
+    private SensoriaSock sensoriaSock;
     private TextView orientationText;
     
     private Timer timer;
@@ -76,6 +78,7 @@ public class OrientationDiagnostics extends Activity {
         bindService(new Intent(this, SensorService.class), sensorServiceConnection,
                         Context.BIND_AUTO_CREATE);
         helper = Helper.getInstance(getApplicationContext());
+        sensoriaSock = new SensoriaSock(getApplicationContext());
     }
 
     @Override
@@ -91,11 +94,9 @@ public class OrientationDiagnostics extends Activity {
                 FileWriter fstream = new FileWriter(f);
                 BufferedWriter out = new BufferedWriter(fstream);
                 out.append((new Orientation()).headersToCsv() + "\n");
-                SQLiteDatabase db = ORMDroidApplication.getInstance().getDatabase();
                 for (Orientation o : orientationCache) {
-                    out.append(o.toCsv(db) + "\n");
+                    out.append(o.toCsv() + "\n");
                 }
-                db.close();
                 out.close();
                 orientationText.setText("Writing to CSV complete!");
             } catch (IOException e) {
@@ -142,15 +143,15 @@ public class OrientationDiagnostics extends Activity {
     @SuppressWarnings("unused")
     public void getCurrentOrientation() {
 
-        Log.v("GlassFitPlatform", "Accel: x:" + sensorService.getAccValues()[0] + ", y:"
-                        + sensorService.getAccValues()[1] + ", z:"
-                        + sensorService.getAccValues()[2] + "m/s/s.");
-        Log.v("GlassFitPlatform", "Gyro: x:" + sensorService.getGyroValues()[0] + ", y:"
-                        + sensorService.getGyroValues()[1] + ", z:"
-                        + sensorService.getGyroValues()[2] + "rad.");
-        Log.v("GlassFitPlatform", "Mag: x:" + sensorService.getMagValues()[0] + ", y:"
-                        + sensorService.getMagValues()[1] + ", z:"
-                        + sensorService.getMagValues()[2] + "uT.");
+//        Log.v("GlassFitPlatform", "Accel: x:" + sensorService.getAccValues()[0] + ", y:"
+//                        + sensorService.getAccValues()[1] + ", z:"
+//                        + sensorService.getAccValues()[2] + "m/s/s.");
+//        Log.v("GlassFitPlatform", "Gyro: x:" + sensorService.getGyroValues()[0] + ", y:"
+//                        + sensorService.getGyroValues()[1] + ", z:"
+//                        + sensorService.getGyroValues()[2] + "rad.");
+//        Log.v("GlassFitPlatform", "Mag: x:" + sensorService.getMagValues()[0] + ", y:"
+//                        + sensorService.getMagValues()[1] + ", z:"
+//                        + sensorService.getMagValues()[2] + "uT.");
 
         String oText = new String();
         DecimalFormat df = new DecimalFormat("+000.00; -000.00");
@@ -188,6 +189,10 @@ public class OrientationDiagnostics extends Activity {
                         + df.format(Math.toDegrees(helper.getOrientation().toYpr()[1]))
                         + " / "
                         + df.format(Math.toDegrees(helper.getOrientation().toYpr()[2]))
+                        + "\n";
+        
+        oText += "Sensoria Pressure: "
+                        + sensoriaSock.getPressureSensorValues(System.currentTimeMillis())[0]
                         + "\n";
 
         orientationText.setText(oText);

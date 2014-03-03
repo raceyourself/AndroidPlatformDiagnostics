@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.gpstracker.SyncHelper;
+import com.glassfitgames.glassfitplatform.models.Device;
+import com.glassfitgames.glassfitplatform.models.Friend;
 import com.glassfitgames.glassfitplatform.models.Game;
 import com.glassfitgames.glassfitplatform.models.Position;
 import com.glassfitgames.glassfitplatform.models.Track;
@@ -29,6 +31,7 @@ import com.glassfitgames.glassfitplatform.models.Transaction;
 import com.glassfitgames.glassfitplatform.models.Transaction.InsufficientFundsException;
 import com.glassfitgames.glassfitplatform.models.UserDetail;
 import com.glassfitgames.glassfitplatform.points.PointsHelper;
+import com.glassfitgames.glassfitplatform.sensors.GestureHelper;
 import com.roscopeco.ormdroid.Entity;
 import com.roscopeco.ormdroid.ORMDroidApplication;
 
@@ -47,6 +50,7 @@ public class MainActivity extends Activity {
     private Button testSensorButton;
     private Button trackpadDiagnosticsButton;
     private Button testSyncButton;
+    private Button lifeFitnessButton;
     
     private TextView mainTextView;
 
@@ -64,13 +68,87 @@ public class MainActivity extends Activity {
         testSensorButton = (Button)findViewById(R.id.testSensorButton);
         trackpadDiagnosticsButton = (Button)findViewById(R.id.trackpadDiagnosticsButton);
         testSyncButton = (Button)findViewById(R.id.testSyncButton);
+        lifeFitnessButton = (Button)findViewById(R.id.lifeFitnessDiagnosticsButton);
         mainTextView = (TextView)findViewById(R.id.mainTextView);
 
         testAuthenticationButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
-                startActivityForResult(intent, API_ACCESS_TOKEN_REQUEST_ID);
+                //Intent intent = new Intent(getApplicationContext(), AuthenticationActivity.class);
+                //startActivityForResult(intent, API_ACCESS_TOKEN_REQUEST_ID);
+                //Helper.getInstance(getApplicationContext()).authorize(MainActivity.this, "any", "login");
+                
+                // test setup
+                Track track = new Track(UserDetail.get().getGuid(), "Profile");
+                Location location = new Location("");
+                Position ps = new Position(track, location);
+                Device d = Device.self();
+                Friend f = new Friend();
+                
+                ORMDroidApplication.getInstance().beginTransaction();
+                ORMDroidApplication.getInstance().beginTransaction();
+                d.save();
+                f.save();
+                ps.save();
+                ps.flush();
+                track.save();
+                track.flush();
+                ORMDroidApplication.getInstance().setTransactionSuccessful();
+                ORMDroidApplication.getInstance().endTransaction();
+                ORMDroidApplication.getInstance().setTransactionSuccessful();
+                ORMDroidApplication.getInstance().endTransaction();
+                
+                
+                // test individual inserts
+                long starttime = System.currentTimeMillis();
+                for (int i=0; i<1000; i++) {
+                    Position p = new Position(track, location);
+                    p.save();
+                }
+                Log.i("ORM","Time for 1000 individual position inserts is " + (System.currentTimeMillis()-starttime)/1000.0f + " seconds.");
+                
+                // test query
+                //ORMDroidApplication.getInstance().clearCache();
+                starttime = System.currentTimeMillis();
+                List<Position> positions = track.getTrackPositions();
+                Log.i("ORM","Time to query " + positions.size() + " inserted positions is " + (System.currentTimeMillis()-starttime)/1000.0f + " seconds.");
+                
+                // test individual deletes
+                starttime = System.currentTimeMillis();
+                for(Position p : positions) {
+                    p.delete();
+                    p.flush();
+                }
+                Log.i("ORM","Time for 1000 individual position deletes is " + (System.currentTimeMillis()-starttime)/1000.0f + " seconds.");
+                
+                // test inserts in transaction
+                starttime = System.currentTimeMillis();
+                ORMDroidApplication.getInstance().beginTransaction();
+                for (int i=0; i<1000; i++) {
+                    Position p = new Position(track, location);
+                    p.save();
+                }
+                ORMDroidApplication.getInstance().setTransactionSuccessful();
+                ORMDroidApplication.getInstance().endTransaction();
+                Log.i("ORM","Time for 1000 position inserts in a single transaction is " + (System.currentTimeMillis()-starttime)/1000.0f + " seconds.");
+                
+                // test query
+                //ORMDroidApplication.getInstance().clearCache();
+                starttime = System.currentTimeMillis();
+                positions = track.getTrackPositions();
+                Log.i("ORM","Time to query " + positions.size() + " inserted positions is " + (System.currentTimeMillis()-starttime)/1000.0f + " seconds.");
+                
+                // test deletes in transaction
+                starttime = System.currentTimeMillis();
+                ORMDroidApplication.getInstance().beginTransaction();
+                for(Position p : positions) {
+                    p.delete();
+                    p.flush();
+                }
+                ORMDroidApplication.getInstance().setTransactionSuccessful();
+                ORMDroidApplication.getInstance().endTransaction();
+                Log.i("ORM","Time for 1000 position deletes in a single transaction is " + (System.currentTimeMillis()-starttime)/1000.0f + " seconds.");
+
             }
         });
 
@@ -93,7 +171,7 @@ public class MainActivity extends Activity {
         trackpadDiagnosticsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), TrackpadDiagnostics.class);
+                Intent intent = new Intent(getApplicationContext(), GestureHelper.class);
                 startActivity(intent);
             }
         });
@@ -101,7 +179,17 @@ public class MainActivity extends Activity {
         testSyncButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                Helper.getInstance(getApplicationContext()).authorize(MainActivity.this, "any", "login");
                 Helper.syncToServer(MainActivity.this);
+                Helper.getFriends();
+            }
+        });
+        
+        lifeFitnessButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LifeFitnessDiagnostics.class);
+                startActivity(intent);
             }
         });
         
