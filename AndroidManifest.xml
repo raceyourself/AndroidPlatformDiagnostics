@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="12"
-        android:targetSdkVersion="16" />
+        android:minSdkVersion="19"
+        android:targetSdkVersion="19" />
 
     <!-- This line added to enable BLE --> 
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>

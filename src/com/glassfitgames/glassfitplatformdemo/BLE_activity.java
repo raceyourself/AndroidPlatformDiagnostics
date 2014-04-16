@@ -178,8 +178,8 @@ public class BLE_activity extends Activity implements GlassFit_BLE_Callbacks{
 
 
         //Set up our BLE classes
-        ble_HR_monitor = new GlassFit_BLE_HR(getApplicationContext());
-        //ble_speedometer = new GlassFit_BLE_SPEEDO();
+        ble_HR_monitor = new GlassFit_BLE_HR(this);
+        ble_speedometer = new GlassFit_BLE_SPEEDO(this);
 
         //Set up UI controls
         button_init_BLE= (Button)findViewById(R.id.button1);
@@ -226,8 +226,8 @@ public class BLE_activity extends Activity implements GlassFit_BLE_Callbacks{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode== GlassFit_BLE.REQUEST_ENABLE_BT && resultCode==Activity.RESULT_OK){
             //Start scanning for devices
-            //ble_HR_monitor.ScanForBLEDevices(true);
-            //text_log.append("Started scanning for HR BLE devices\n\r");
+            ble_HR_monitor.ScanForBLEDevices(true);
+            text_log.append("Started scanning for HR BLE devices\n\r");
 
         }
 
