@@ -8,18 +8,18 @@
         android:minSdkVersion="19"
         android:targetSdkVersion="19" />
 
-    <!-- This line added to enable BLE --> 
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-    
-    
+    <!-- This line added to enable BLE -->
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-      <!-- Needs these permissions to work --> 
-     <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    
+    <!-- Needs these permissions to work -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:allowBackup="true"
@@ -65,7 +65,11 @@
             android:name="com.glassfitgames.glassfitplatform.auth.AuthenticationActivity"
             android:label="@string/title_activity_authentication" >
         </activity>
-        
+        <activity android:name="com.glassfitgames.glassfitplatformdemo.DeviceControlActivity" />
+        <activity
+            android:name="com.glassfitgames.glassfitplatformdemo.DeviceScanActivity"
+            android:label="@string/app_name" >
+        </activity>
 
         <!-- services -->
         <service
@@ -78,10 +82,18 @@
             android:name="com.glassfitgames.glassfitplatformdemo.BLE_activity"
             android:label="@string/title_activity_ble_activity" >
         </activity>
+
         <!-- BLE sensor services -->
-        <service android:name=".BluetoothLeService_HR" android:enabled="true"/>
-        <service android:name=".BluetoothLeService_SPEEDO" android:enabled="true"/>
-   
-        </application>
+        <service
+            android:name="com.glassfitgames.glassfitplatformdemo.BluetoothLeService"
+            android:enabled="true" />
+
+        <activity
+            android:name="com.glassfitgames.glassfitplatformdemo.FitnessSensorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_fitness_sensor"
+            android:theme="@style/FullscreenTheme" >
+        </activity>
+    </application>
 
 </manifest>

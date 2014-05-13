@@ -21,10 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE;
-import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE_Callbacks;
-import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE_HR;
-import com.glassfitgames.glassfitplatform.BLE.GlassFit_BLE_SPEEDO;
+import com.glassfitgames.glassfitplatform.BLE.BluetoothLeHelper;
 import com.glassfitgames.glassfitplatform.auth.AuthenticationActivity;
 import com.glassfitgames.glassfitplatform.gpstracker.Helper;
 import com.glassfitgames.glassfitplatform.gpstracker.SyncHelper;
@@ -46,10 +43,6 @@ import com.roscopeco.ormdroid.ORMDroidApplication;
  */
 public class MainActivity extends Activity {
 
-	
-	
-    
-    
     static final int API_ACCESS_TOKEN_REQUEST_ID = 0;
     
     private Button testAuthenticationButton;
@@ -59,6 +52,7 @@ public class MainActivity extends Activity {
     private Button testSyncButton;
     //BLE buttons
     private Button testBLE_HR;
+    private BluetoothLeHelper BleHelper;
     
     
     private TextView mainTextView;
@@ -125,9 +119,11 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-			
-			Intent intent=new Intent(getApplicationContext(),BLE_activity.class);
-			startActivity(intent);
+    			//Intent intent=new Intent(getApplicationContext(),FitnessSensorActivity.class);
+    			Intent intent=new Intent(getApplicationContext(),DeviceScanActivity.class);
+    			startActivity(intent);
+			    //BleHelper = new BluetoothLeHelper(getApplicationContext());
+			    //BleHelper.startListening();
 			}
 		});
         
@@ -240,20 +236,8 @@ public class MainActivity extends Activity {
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
             } 
-            break; 
-          } 
-         //If the user has just agreed to enable Bluetooth
-          case (GlassFit_BLE.REQUEST_ENABLE_BT):
-          {
-            if (resultCode==Activity.RESULT_OK) //check that the result is actually ok
-            {
-            	  //Start scanning for devices
-                //ble_HR_monitor.ScanForBLEDevices(true);
-                //text_log.append("Started scanning for HR BLE devices\n\r");
-            }
-        	
-            	
-//
+            break;  
+
           }
         } 
       }
